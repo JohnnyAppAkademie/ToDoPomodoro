@@ -1,3 +1,3 @@
-# todopomodoro
+# ToDoPomodoro
 
-A new Flutter project.
+Eine To-Do App mit integriertem Pomodoro Timer.
