@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todopomodoro/style.dart';
 
-class GenericWidgets extends StatelessWidget {
-  const GenericWidgets({super.key});
-
+class GenericWidgets {
   static Widget appHeader(BuildContext context, String title, String subtitle) {
     return Column(
       children: [
@@ -70,11 +68,5 @@ class GenericWidgets extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
   }
 }

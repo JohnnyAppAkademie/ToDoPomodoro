@@ -8,9 +8,11 @@ class AppColours {
   static const Color label = Color.fromRGBO(61, 38, 69, 1);
   static const Color primary = Color.fromRGBO(97, 19, 95, 1);
   static const Color primaryDark = Color.fromRGBO(64, 30, 120, 1);
+  static const Color primaryLight = Color.fromRGBO(151, 58, 168, 1);
 
   /*  Text-Colour */
   static const Color lightText = Color.fromRGBO(244, 239, 250, 1);
+  static const Color darkPressed = Color.fromRGBO(89, 35, 99, 1);
 
   /*  Button-States includes Symbols  */
   static const Color buttonUnpressed = Color.fromRGBO(244, 239, 250, 1);
@@ -29,5 +31,17 @@ class AppTextStyles {
     color: AppColours.lightText,
     fontSize: 18,
     fontStyle: FontStyle.italic,
+  );
+
+  static const TextStyle normalText = TextStyle(
+    color: AppColours.lightText,
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  );
+
+  static const TextStyle iconText = TextStyle(
+    color: AppColours.darkPressed,
+    fontWeight: FontWeight.bold,
+    fontSize: 12,
   );
 }

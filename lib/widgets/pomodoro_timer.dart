@@ -109,7 +109,8 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
 
   //  ----------------  Widgets  ---------------- //
 
-  /// __Funktion: pomodoroPhaseBuilder()__
+  /// Widget:
+  /// <br> __pomodoroPhaseBuilder()__
   /// <br> Erstellt einen Textfeld, indem die Phase des Pomodoro's angezeigt werden
   ValueListenableBuilder pomodoroPhaseBuilder() {
     return ValueListenableBuilder<String>(
@@ -119,7 +120,8 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
     );
   }
 
-  /// __Funktion: pomodoroProgressBuilder()__
+  /// Widget:
+  /// <br> __pomodoroProgressBuilder()__
   /// <br> Erstellt eine Progressbar, in der der Fortschritt der Phase angezeigt wird
   ValueListenableBuilder pomodoroProgressBuilder() {
     return ValueListenableBuilder<Duration>(
@@ -148,7 +150,8 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
     );
   }
 
-  /// __Funktion: pomodoroPhaseBuilder()__
+  /// Widget:
+  /// <br> __pomodoroPhaseBuilder()__
   /// <br> Erstellt einen Textfeld, indem die Zeit für die Phase und die Zeit für die jeweilge Phase angezeigt wird
   ValueListenableBuilder pomodoroTimeBuilder() {
     return ValueListenableBuilder<Duration>(
@@ -232,7 +235,8 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
     );
   }
 
-  /// __Funktion: pomodoroInteraction()__
+  /// Widget:
+  /// <br> __pomodoroInteraction()__
   /// <br> Erstellt einen Button, die einer Funktion und ein Text übergeben wird.
   /// * <br>__Benötigt:__
   /// * Die Funktion, welcher der Button onPress bekommen soll __[Function : funct]__
@@ -264,7 +268,8 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
     );
   }
 
-  /// __Funktion: pomodoroOption()__
+  /// Widget:
+  /// <br> __pomodoroOption()__
   /// <br> Erstellt einen ButtonSegment, der für SegmentedButtons benötigt werden.
   /// * <br>__Benötigt:__
   /// * Der Label für den Button __[String : label]__
