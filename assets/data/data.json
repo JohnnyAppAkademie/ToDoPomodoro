@@ -1,0 +1,14 @@
+{
+  "tasks": [
+    {"id": 1, "title": "Aufräumen", "duration": 40},
+    {"id": 2, "title": "Blumen gießen", "duration": 30},
+    {"id": 3, "title": "Sit-Ups", "duration":20}
+  ],
+  "tags": [
+    {"id": 0, "name": "Tasks", "taskIDs": [1, 2, 3]},
+    {"id": 1, "name": "Haus", "taskIDs": [1, 2]},
+    {"id": 2, "name": "Workout", "taskIDs": [3]},
+    {"id": 3, "name": "Hobby", "taskIDs": []},
+    {"id": 4, "name": "Other", "taskIDs": []}
+  ]
+}
