@@ -1,20 +1,20 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/src/core/utils/extensions/context_extension.dart';
 
 /*  Tag - Logik  */
 import 'package:todopomodoro/src/data/tag.dart';
 
-/*  TaskPage - Logik  */
+/*  Task - Logik  */
 import 'package:todopomodoro/src/data/task.dart';
+
+/* Page - Import */
 import 'package:todopomodoro/src/view/pomodoro/pages/pomodoro_page.dart';
 import 'package:todopomodoro/src/view/task/pages/task_setting_page.dart';
 
 /*  Provider - Import  */
 import 'package:todopomodoro/src/core/utils/task/task_provider.dart';
-
-/*  General - Design  */
-import 'package:todopomodoro/style.dart';
 
 /// __TaskCard__ - Class
 /// <br> Beinhaltet den Aufbau der TaskCard. <br>
@@ -28,7 +28,7 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return taskCard(tag, task, context);
+    return taskCard(context: context, tag: tag, task: task);
   }
 
   //  ----------------  Widgets  ---------------- //
@@ -37,7 +37,11 @@ class TaskCard extends StatelessWidget {
   ///<br> Baut eine Task-Card samt Optionen auf. <br>
   ///<br> __Benötigt__:
   ///* Die Aufgabe die abgebildet werden soll __[Task : t]__
-  Widget taskCard(Tag tag, Task task, BuildContext context) {
+  Widget taskCard({
+    required BuildContext context,
+    required Tag tag,
+    required Task task,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -47,99 +51,96 @@ class TaskCard extends StatelessWidget {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [cardTopTheme(task), cardBottomTheme(tag, task, context)],
-        ),
-      ),
-    );
-  }
-
-  ///  __cardTopTheme__ - Widget
-  ///<br> Baut den oberen Teil der Task-Card auf. <br>
-  ///<br> __Benötigt__:
-  ///* Die Aufgabe die ausgelesen werden soll __[Task : t]__
-  Widget cardTopTheme(Task t) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppColours.primaryLight,
-            AppColours.primaryDark,
-            AppColours.primaryLight,
-          ],
-        ),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      child: Row(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(t.title, style: AppTextStyles.normalText),
-              Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    context.appStyle.gradient1,
+                    context.appStyle.gradient2,
+                    context.appStyle.gradient3,
+                  ],
+                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Row(
                 children: [
-                  SizedBox(width: 60),
-                  Icon(Icons.timer, color: Colors.white, size: 16),
-                  SizedBox(width: 10),
-                  Text(
-                    '${t.duration.inMinutes.toString()} min',
-                    style: TextStyle(color: Colors.white),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        task.title,
+                        style: context.textStyles.light.labelLarge,
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(width: 60),
+                          Icon(Icons.timer, color: Colors.white, size: 16),
+                          SizedBox(width: 10),
+                          Text(
+                            '${task.duration.inMinutes.toString()} min',
+                            style: context.textStyles.light.labelSmall,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// __cardBottomTheme__ - Widget
-  ///<br> Baut die untere Hälfte der Task-Card auf. <br>
-  Widget cardBottomTheme(Tag tag, Task task, BuildContext context) {
-    final controller = context.watch<TaskProvider>();
-
-    if (controller.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      width: double.infinity,
-      height: 60,
-      decoration: BoxDecoration(
-        color: AppColours.primaryDark,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: cardButton(
-              Icons.delete_outline_outlined,
-              "Delete",
-              deleteButtonPress(tag, task, context),
             ),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: cardButton(
-              Icons.play_arrow_outlined,
-              "Start",
-              taskButtonPress(context, task),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              width: double.infinity,
+              height: 60,
+              decoration: BoxDecoration(
+                color: context.appStyle.labelBackground,
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(16),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: cardButton(
+                      context: context,
+                      iconData: Icons.delete_outline_outlined,
+                      label: "Delete",
+                      callBack: () => deleteButtonPress(
+                        context: context,
+                        tag: tag,
+                        task: task,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: cardButton(
+                      context: context,
+                      iconData: Icons.play_arrow_outlined,
+                      label: "Start",
+                      callBack: () =>
+                          taskButtonPress(context: context, task: task),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: cardButton(
+                      context: context,
+                      iconData: Icons.settings_outlined,
+                      label: "Settings",
+                      callBack: () =>
+                          settingButtonPress(context: context, task: task),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: cardButton(
-              Icons.settings_outlined,
-              "Settings",
-              settingButtonPress(context, task),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -149,21 +150,22 @@ class TaskCard extends StatelessWidget {
   ///<br> __Benötigt__:
   ///* Das Icon für den Button __[IconData : iconData]__
   ///* Der Text für den Button __[Text : label]__
-  Widget cardButton(IconData iconData, String label, VoidCallback callBack) {
+  Widget cardButton({
+    required BuildContext context,
+    required IconData iconData,
+    required String label,
+    required VoidCallback callBack,
+  }) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.zero,
-        minimumSize: const Size(0, 35),
-        backgroundColor: AppColours.buttonUnpressed,
-      ),
+      style: context.buttonStyles.card,
       onPressed: callBack,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(iconData, size: 20, color: AppColours.buttonPressed),
+          Icon(iconData, size: 20, color: context.appStyle.writingHighlight),
           SizedBox(width: 4),
-          Text(label, style: AppTextStyles.iconText),
+          Text(label, style: context.textStyles.highlight.bodyMedium),
         ],
       ),
     );
@@ -171,7 +173,10 @@ class TaskCard extends StatelessWidget {
 
   //  ----------------  Funktionen  ---------------- //
 
-  VoidCallback taskButtonPress(BuildContext context, Task task) {
+  VoidCallback taskButtonPress({
+    required BuildContext context,
+    required Task task,
+  }) {
     return () {
       Navigator.push(
         context,
@@ -180,7 +185,10 @@ class TaskCard extends StatelessWidget {
     };
   }
 
-  VoidCallback settingButtonPress(BuildContext context, Task task) {
+  VoidCallback settingButtonPress({
+    required BuildContext context,
+    required Task task,
+  }) {
     return () {
       Navigator.push(
         context,
@@ -189,7 +197,11 @@ class TaskCard extends StatelessWidget {
     };
   }
 
-  VoidCallback deleteButtonPress(Tag tag, Task task, BuildContext context) {
+  VoidCallback deleteButtonPress({
+    required BuildContext context,
+    required Tag tag,
+    required Task task,
+  }) {
     return () {
       if (tag.id == TaskProvider.systemTagId) {
         context.read<TaskProvider>().deleteTask(task);

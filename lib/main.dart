@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/src/core/theme/themes.dart';
 import 'package:todopomodoro/src/core/utils/task/task_provider.dart';
 import 'package:todopomodoro/main_page.dart';
 
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: standardTheme(AppStyle.standard()),
       debugShowCheckedModeBanner: false,
       title: 'ToDo & Pomodoro',
       home: MyMainPage(),

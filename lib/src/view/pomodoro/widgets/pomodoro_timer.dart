@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/src/core/theme/themes.dart';
 import 'package:todopomodoro/src/data/pomodoro_timer.dart';
-import 'package:todopomodoro/style.dart';
 
 /// __PomodoroWidget__ - Klasse
 /// <br> Die Oberklasse für das Pomodoro-Widget, was aufgerufen werden kann. <br>
@@ -59,15 +59,13 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final buttonStyles = Theme.of(context).extension<AppButtonStyles>()!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SegmentedButton<String>(
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(
-              AppColours.buttonUnpressed,
-            ),
-          ),
+          style: buttonStyles.primary,
           segments: [
             pomodoroOption("Progress", Icons.data_usage),
             pomodoroOption("Time", Icons.alarm),
@@ -127,6 +125,8 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
   /// __pomodoroProgressBuilder__ - Widget:
   /// <br> Erstellt eine Progressbar, in der der Fortschritt der Phase angezeigt wird. <br>
   ValueListenableBuilder pomodoroProgressBuilder() {
+    final appStyle = Theme.of(context).extension<AppStyle>()!;
+
     return ValueListenableBuilder<Duration>(
       valueListenable: _pomodoroTimer.totalElapsedTaskTimeVN,
       builder: (context, remaining, _) {
@@ -142,8 +142,8 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
             width: 200,
             height: 200,
             child: CircularProgressIndicator(
-              color: AppColours.buttonPressed,
-              backgroundColor: AppColours.buttonUnpressed,
+              color: appStyle.buttonBackgroundprimary,
+              backgroundColor: appStyle.buttonBackgroundLight,
               value: progress,
               strokeWidth: 16,
             ),
@@ -158,6 +158,9 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
   /// indem die Zeit für die Phase und
   /// die Zeit für die jeweilge Phase angezeigt wird. <br>
   ValueListenableBuilder pomodoroTimeBuilder() {
+    final appStyle = Theme.of(context).extension<AppStyle>()!;
+    final textStyles = Theme.of(context).extension<TextThemeStyles>()!;
+
     return ValueListenableBuilder<Duration>(
       valueListenable: _pomodoroTimer.remainingSessionTimeVN,
       builder: (context, remaining, _) {
@@ -184,23 +187,14 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
                     right: 25,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColours.label,
+                    color: appStyle.labelBackground,
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    minutes,
-                    style: const TextStyle(
-                      fontSize: 48,
-                      color: AppColours.lightText,
-                    ),
-                  ),
+                  child: Text(minutes, style: textStyles.light.titleSmall),
                 ),
                 const SizedBox(width: 15),
-                const Text(
-                  ":",
-                  style: TextStyle(fontSize: 48, color: AppColours.primary),
-                ),
+                Text(":", style: textStyles.dark.titleMedium),
                 const SizedBox(width: 15),
                 Container(
                   padding: const EdgeInsets.only(
@@ -210,28 +204,18 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
                     right: 25,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColours.label,
+                    color: appStyle.labelBackground,
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    seconds,
-                    style: const TextStyle(
-                      fontSize: 48,
-                      color: AppColours.lightText,
-                    ),
-                  ),
+                  child: Text(seconds, style: textStyles.light.titleSmall),
                 ),
               ],
             ),
             const SizedBox(height: 15),
             Text(
               "Gesamtzeit verbleibend: ${_formatDuration(_pomodoroTimer.remainingTaskTimeVN.value)}",
-              style: const TextStyle(
-                fontSize: 18,
-                color: AppColours.label,
-                fontWeight: FontWeight.bold,
-              ),
+              style: textStyles.dark.titleMedium,
             ),
           ],
         );
@@ -249,10 +233,15 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
     String txt,
     IconData icon,
   ) {
+    final appStyle = Theme.of(context).extension<AppStyle>()!;
+    final textStyles = Theme.of(context).extension<TextThemeStyles>()!;
+
     return ElevatedButton(
       onPressed: funct,
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(AppColours.buttonPressed),
+        backgroundColor: WidgetStateProperty.all(
+          appStyle.buttonBackgroundprimary,
+        ),
         minimumSize: WidgetStateProperty.all(Size(double.infinity, 50)),
         shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
@@ -264,8 +253,8 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 5,
         children: [
-          Icon(icon, color: AppColours.lightText),
-          Text(txt, style: TextStyle(color: AppColours.lightText)),
+          Icon(icon, color: appStyle.writingLight),
+          Text(txt, style: textStyles.light.bodySmall),
         ],
       ),
     );
@@ -277,10 +266,13 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
   /// * Der Label für den Button __[String : label]__
   /// * Der Icon für den Button __[IconData : icon]__
   ButtonSegment<String> pomodoroOption(String label, IconData icon) {
+    final appStyle = Theme.of(context).extension<AppStyle>()!;
+    final textStyles = Theme.of(context).extension<TextThemeStyles>()!;
+
     return ButtonSegment<String>(
       value: label,
-      label: Text(label, style: TextStyle(color: AppColours.buttonPressed)),
-      icon: Icon(icon, color: AppColours.buttonPressed),
+      label: Text(label, style: textStyles.dark.bodyMedium),
+      icon: Icon(icon, color: appStyle.buttonBackgroundprimary),
     );
   }
 

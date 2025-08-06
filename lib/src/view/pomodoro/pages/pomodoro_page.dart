@@ -1,12 +1,10 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/src/core/utils/extensions/context_extension.dart';
 import 'package:todopomodoro/src/data/task.dart';
 
 /* Shared Widgets - Import  */
-import 'package:todopomodoro/src/core/widgets/app_header.dart';
-
-/*  General - Design  */
-import 'package:todopomodoro/style.dart';
+import 'package:todopomodoro/src/core/widgets/custom_app_bar.dart';
 
 /*  Pomodoro - Logik and Design */
 import 'package:todopomodoro/src/data/pomodoro_timer.dart';
@@ -20,7 +18,7 @@ class PomodoroTimerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColours.background,
+      backgroundColor: context.appStyle.background,
       body: Center(
         child: Column(
           children: [

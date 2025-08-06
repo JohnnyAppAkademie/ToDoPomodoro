@@ -34,9 +34,14 @@ class _MyMainPageState extends State<MyMainPage> {
       SettingPage(),
     ];
 
+    final navTheme = Theme.of(context).navigationBarTheme;
+
     return Scaffold(
       body: pages[_selectedPage],
       bottomNavigationBar: NavigationBar(
+        backgroundColor: navTheme.backgroundColor,
+        indicatorColor: navTheme.indicatorColor,
+        selectedIndex: _selectedPage,
         destinations: [
           NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
           NavigationDestination(

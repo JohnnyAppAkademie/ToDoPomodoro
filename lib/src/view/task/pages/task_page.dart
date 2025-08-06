@@ -1,6 +1,8 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/src/core/utils/extensions/context_extension.dart';
+
 /*  Provider - Import */
 import 'package:todopomodoro/src/core/utils/task/task_provider.dart';
 
@@ -10,10 +12,9 @@ import 'package:todopomodoro/src/data/task.dart';
 
 /*  TaskCard - Design */
 import 'package:todopomodoro/src/view/task/widgets/task_card.dart';
-/*  General - Design  */
-import 'package:todopomodoro/style.dart';
+
 /* Generic Widgets - Import */
-import 'package:todopomodoro/src/core/widgets/app_header.dart';
+import 'package:todopomodoro/src/core/widgets/custom_app_bar.dart';
 
 class TaskPage extends StatelessWidget {
   const TaskPage({super.key, required this.tag});
@@ -31,16 +32,15 @@ class TaskPage extends StatelessWidget {
     final List<Task> tasks = controller.readAllTasks(tag);
 
     return Scaffold(
-      backgroundColor: AppColours.background,
+      appBar: AppHeaderWidget(
+        title: "Tasks",
+        subtitle: tag.name,
+        returnButton: true,
+        callBack: () => Navigator.pop(context),
+      ),
       body: Center(
         child: Column(
           children: [
-            AppHeaderWidget(
-              title: "Tasks",
-              subtitle: tag.name,
-              returnButton: true,
-              callBack: () => Navigator.pop(context),
-            ),
             Expanded(
               child: ListView.builder(
                 itemCount: tasks.length,
@@ -49,7 +49,12 @@ class TaskPage extends StatelessWidget {
                     return Center(child: CircularProgressIndicator());
                   }
                   if (controller.tasks.isEmpty) {
-                    return Center(child: Text("Keine Tasks"));
+                    return Center(
+                      child: Text(
+                        "Keine Tasks",
+                        style: context.textStyles.dark.titleSmall,
+                      ),
+                    );
                   } else {
                     return TaskCard(tag: tag, task: tasks[index]);
                   }

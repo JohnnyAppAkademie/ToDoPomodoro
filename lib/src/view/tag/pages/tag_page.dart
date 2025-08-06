@@ -2,10 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/*  General - Design  */
-import 'package:todopomodoro/style.dart';
 /* Generic Widgets - Import */
-import 'package:todopomodoro/src/core/widgets/app_header.dart';
+import 'package:todopomodoro/src/core/widgets/custom_app_bar.dart';
 /*  TagCard - Design */
 import 'package:todopomodoro/src/view/tag/widgets/tag_card.dart';
 /*  Provider - Import */
@@ -23,10 +21,9 @@ class TagPage extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: AppColours.background,
+      appBar: AppHeaderWidget(title: "Tags", returnButton: false),
       body: Column(
         children: [
-          AppHeaderWidget(title: "Tags"),
           Expanded(
             child: ListView.builder(
               itemCount: controller.tags.length,
