@@ -188,7 +188,7 @@ ThemeData standardTheme(AppStyle style) {
 
   final ButtonStyle secondaryButton = ElevatedButton.styleFrom(
     backgroundColor: style.buttonBackgroundLight,
-    foregroundColor: style.writingLight,
+    foregroundColor: style.writingDark,
   );
 
   final ButtonStyle cardButton = ElevatedButton.styleFrom(

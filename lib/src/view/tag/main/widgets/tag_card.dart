@@ -1,11 +1,11 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
-import 'package:todopomodoro/src/core/utils/extensions/context_extension.dart';
+import 'package:todopomodoro/src/core/extensions/context_extension.dart';
 /*  Tag - Logik  */
-import 'package:todopomodoro/src/data/tag.dart';
+import 'package:todopomodoro/src/core/data/tag.dart';
 /* Page - Import */
-import 'package:todopomodoro/src/view/task/pages/task_page.dart';
-import 'package:todopomodoro/src/view/tag/pages/tag_setting_page.dart';
+import 'package:todopomodoro/src/view/task/main/pages/task_page.dart';
+import 'package:todopomodoro/src/view/tag/settings/pages/tag_setting_page.dart';
 
 /// __TagCard__ - Class
 /// <br> Beinhaltet den Aufbau der TaskCard. <br>
@@ -49,7 +49,7 @@ class TagCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(tag.name, style: context.textStyles.light.labelLarge),
+                  Text(tag.title, style: context.textStyles.light.labelLarge),
                 ],
               ),
             ),

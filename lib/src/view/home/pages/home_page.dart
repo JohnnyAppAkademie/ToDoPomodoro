@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todopomodoro/src/core/utils/extensions/context_extension.dart';
-import 'package:todopomodoro/src/core/widgets/custom_app_bar.dart';
+import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

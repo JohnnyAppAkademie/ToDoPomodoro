@@ -1,13 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:todopomodoro/src/core/utils/extensions/context_extension.dart';
-import 'package:todopomodoro/src/data/task.dart';
+import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+import 'package:todopomodoro/src/core/data/task.dart';
 
 class TaskSelectionDialog extends StatefulWidget {
   final List<Task> allTasks;
-  final Set<int> initiallySelected;
-  final void Function(Set<int>) onSave;
+  final Set<String> initiallySelected;
+  final void Function(Set<String>) onSave;
 
   const TaskSelectionDialog({
     super.key,
@@ -21,13 +21,13 @@ class TaskSelectionDialog extends StatefulWidget {
 }
 
 class _TaskSelectionDialogState extends State<TaskSelectionDialog> {
-  late Set<int> selectedIds;
+  late Set<String> selectedIds;
   late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    selectedIds = Set<int>.from(widget.initiallySelected);
+    selectedIds = Set<String>.from(widget.initiallySelected);
     _scrollController = ScrollController();
   }
 
@@ -75,7 +75,7 @@ class _TaskSelectionDialogState extends State<TaskSelectionDialog> {
                         itemCount: widget.allTasks.length,
                         itemBuilder: (_, index) {
                           final task = widget.allTasks[index];
-                          final isChecked = selectedIds.contains(task.id);
+                          final isChecked = selectedIds.contains(task.uID);
                           return CheckboxListTile(
                             checkColor: context.appStyle.writingLight,
                             activeColor:
@@ -88,9 +88,9 @@ class _TaskSelectionDialogState extends State<TaskSelectionDialog> {
                             onChanged: (val) {
                               setState(() {
                                 if (val == true) {
-                                  selectedIds.add(task.id);
+                                  selectedIds.add(task.uID);
                                 } else {
-                                  selectedIds.remove(task.id);
+                                  selectedIds.remove(task.uID);
                                 }
                               });
                             },

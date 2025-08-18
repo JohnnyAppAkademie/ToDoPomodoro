@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todopomodoro/src/core/widgets/custom_app_bar.dart';
+import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});

@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todopomodoro/src/core/theme/themes.dart';
-import 'package:todopomodoro/src/data/pomodoro_timer.dart';
+import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+import 'package:todopomodoro/src/core/data/pomodoro_timer.dart';
 
 /// __PomodoroWidget__ - Klasse
 /// <br> Die Oberklasse für das Pomodoro-Widget, was aufgerufen werden kann. <br>
@@ -59,13 +60,12 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final buttonStyles = Theme.of(context).extension<AppButtonStyles>()!;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        /*  Darstellung-Umstellung */
         SegmentedButton<String>(
-          style: buttonStyles.primary,
+          style: context.buttonStyles.primary,
           segments: [
             pomodoroOption("Progress", Icons.data_usage),
             pomodoroOption("Time", Icons.alarm),
@@ -76,7 +76,14 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
           },
         ),
         const SizedBox(height: 25),
-        pomodoroPhaseBuilder(),
+        /*  Phase */
+        ValueListenableBuilder<String>(
+          valueListenable: _pomodoroTimer.currentPhaseVN,
+          builder: (_, phase, _) =>
+              Text("Phase: $phase", style: context.textStyles.dark.titleSmall),
+        ),
+
+        /*  Darstellung */
         if (_viewMode == 'Time') ...[
           const SizedBox(height: 25),
           pomodoroTimeBuilder(),
@@ -111,17 +118,6 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
 
   //  ----------------  Widgets  ---------------- //
 
-  /// __pomodoroPhaseBuilder__ - Widget:
-  /// <br> Erstellt einen Textfeld,
-  /// indem die Phase des Pomodoro's angezeigt werden. <br>
-  ValueListenableBuilder pomodoroPhaseBuilder() {
-    return ValueListenableBuilder<String>(
-      valueListenable: _pomodoroTimer.currentPhaseVN,
-      builder: (_, phase, _) =>
-          Text("Phase: $phase", style: const TextStyle(fontSize: 24)),
-    );
-  }
-
   /// __pomodoroProgressBuilder__ - Widget:
   /// <br> Erstellt eine Progressbar, in der der Fortschritt der Phase angezeigt wird. <br>
   ValueListenableBuilder pomodoroProgressBuilder() {
@@ -137,7 +133,6 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
             : 0.0;
 
         return Center(
-          // optional, aber hilfreich bei zentrierter Darstellung
           child: SizedBox(
             width: 200,
             height: 200,
@@ -215,7 +210,9 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
             const SizedBox(height: 15),
             Text(
               "Gesamtzeit verbleibend: ${_formatDuration(_pomodoroTimer.remainingTaskTimeVN.value)}",
-              style: textStyles.dark.titleMedium,
+              style: textStyles.dark.labelMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         );
@@ -254,7 +251,7 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
         spacing: 5,
         children: [
           Icon(icon, color: appStyle.writingLight),
-          Text(txt, style: textStyles.light.bodySmall),
+          Text(txt, style: textStyles.light.labelSmall),
         ],
       ),
     );
@@ -271,8 +268,8 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
 
     return ButtonSegment<String>(
       value: label,
-      label: Text(label, style: textStyles.dark.bodyMedium),
-      icon: Icon(icon, color: appStyle.buttonBackgroundprimary),
+      label: Text(label, style: textStyles.light.bodyMedium),
+      icon: Icon(icon, color: appStyle.buttonBackgroundLight),
     );
   }
 
