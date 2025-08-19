@@ -1,15 +1,17 @@
 /*  Basic - Import  */
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
-import 'package:todopomodoro/src/view/history/pages/history_page.dart';
-import 'package:todopomodoro/src/view/setting/page/setting_page.dart';
+import 'package:todopomodoro/src/core/utils/provider/app_provider.dart';
+import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
+
 /*  Pages - Import  */
 import 'package:todopomodoro/src/view/tag/main/pages/tag_page.dart';
 import 'package:todopomodoro/src/view/home/pages/home_page.dart';
 import 'package:todopomodoro/src/view/tag/settings/pages/tag_setting_page.dart';
+import 'package:todopomodoro/src/view/task/main/pages/task_page.dart';
 import 'package:todopomodoro/src/view/task/settings/pages/task_setting_page.dart';
+import 'package:todopomodoro/src/view/history/pages/history_page.dart';
 
 class MyMainPage extends StatefulWidget {
   const MyMainPage({super.key});
@@ -23,188 +25,101 @@ class _MyMainPageState extends State<MyMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> pages = [
-      //  Screens   //
+    final appController = context.watch<AppProvider>();
 
+    List<Widget> pages = [
       /* Main - Screen */
       HomePage(),
 
-      /* Task - Screen */
+      /* Tag - Screen */
       TagPage(),
 
-      /*  Main - Screen */
-      HomePage(),
-
-      /* History - Screen */
-      HistoryPage(),
+      /* Task - Screen (SystemTag) */
+      TaskPage(
+        tag: appController.tags.firstWhere(
+          (tag) => tag.uID == appController.getSystemTag,
+        ),
+      ),
 
       /* Settings - Screen */
-      SettingPage(),
+      HistoryPage(),
     ];
 
     final navTheme = Theme.of(context).navigationBarTheme;
 
     return Scaffold(
       body: pages[_selectedPage],
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: navTheme.backgroundColor,
-        indicatorColor: navTheme.indicatorColor,
-        selectedIndex: _selectedPage,
-        destinations: [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(
-            icon: Icon(Icons.sticky_note_2),
-            label: 'Tasks',
-          ),
-          NavigationDestination(icon: Icon(Icons.add), label: 'Add'),
-          NavigationDestination(icon: Icon(Icons.list), label: 'History'),
-          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
-        ],
-        onDestinationSelected: (int index) {
-          setState(() {
-            _selectedPage = index;
-            if (index == 2) {
-              addFunction();
-            }
-          });
-        },
+      bottomNavigationBar: BottomAppBar(
+        color:
+            navTheme.backgroundColor ?? Theme.of(context).colorScheme.surface,
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 6.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            destinationButton(iconData: Icons.home, pagePosition: 0),
+            destinationButton(iconData: Icons.folder, pagePosition: 1),
+            const SizedBox(width: 48),
+            /* Platz für den Add-Button */
+            destinationButton(iconData: Icons.list, pagePosition: 2),
+            destinationButton(iconData: Icons.settings, pagePosition: 3),
+          ],
+        ),
       ),
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => CustomDialoge(
+              dialogeText: 'What do you want to add?',
+              leftButtonText: 'Tag',
+              leftButtonFunc: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TagSettingPage()),
+                );
+                setState(() => _selectedPage = 1);
+              },
+              rightButtonText: 'Task',
+              rightButtonFunc: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TaskSettingPage()),
+                );
+                setState(() => _selectedPage = 2);
+              },
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  /* Dialoge */
-
-  Future<dynamic> addFunction() {
-    return showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => Stack(
-        children: [
-          /* Hintergrund */
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(25),
-              ),
-            ),
-          ),
-
-          /*  Dialoge */
-          Positioned(
-            top: context.screenHeight * 0.25,
-            left: 50,
-            child: Container(
-              width: context.screenWidth * 0.75,
-              height: context.screenHeight * 0.25,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    context.appStyle.gradient1,
-                    context.appStyle.gradient2,
-                    context.appStyle.gradient3,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: context.appStyle.buttonBackgroundprimary,
-                  width: 0.5,
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  /*  Dialoge - Text  */
-                  SizedBox(height: context.screenHeight * 0.05),
-                  Expanded(
-                    child: Text(
-                      "What do you want to add?",
-                      style: context.textStyles.light.labelSmall,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      /*  Tag - Option  */
-                      Container(
-                        height: 50,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: context.appStyle.buttonBackgroundLight,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                            color: context.appStyle.buttonBackgroundLight,
-                            width: 0.5,
-                          ),
-                        ),
-
-                        child: TextButton(
-                          onPressed: () => {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TagSettingPage(),
-                              ),
-                            ),
-                          },
-                          child: Text(
-                            "Tag",
-                            style: context.textStyles.highlight.bodySmall,
-                          ),
-                        ),
-                      ),
-
-                      /*  Task - Option  */
-                      Container(
-                        height: 50,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: context.appStyle.buttonBackgroundLight,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                            color: context.appStyle.buttonBackgroundLight,
-                            width: 0.5,
-                          ),
-                        ),
-                        child: TextButton(
-                          onPressed: () => {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TaskSettingPage(),
-                              ),
-                            ),
-                          },
-                          child: Text(
-                            "Task",
-                            style: context.textStyles.highlight.bodySmall,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: context.screenHeight * 0.02),
-                ],
-              ),
-            ),
-          ),
-
-          /*  Exit  */
-          Positioned(
-            top: context.screenHeight * 0.25,
-            left: context.screenWidth * 0.75,
-            child: IconButton(
-              onPressed: () => {Navigator.pop(context)},
-              icon: Icon(Icons.cancel_outlined),
-            ),
-          ),
-        ],
+  Widget destinationButton({
+    required IconData iconData,
+    required int pagePosition,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: _selectedPage == pagePosition
+            ? context.appStyle.buttonBackgroundLight
+            : Colors.transparent,
+      ),
+      child: IconButton(
+        icon: Icon(
+          iconData,
+          color: _selectedPage == pagePosition
+              ? context.appStyle.writingHighlight
+              : context.appStyle.writingLight,
+        ),
+        onPressed: () => setState(() => _selectedPage = pagePosition),
       ),
     );
   }

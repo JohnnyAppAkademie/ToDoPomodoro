@@ -68,7 +68,7 @@ class _TagSettingPageState extends State<TagSettingPage> {
         title: widget.tag != null ? "Tag - Adjustment" : "Tag - Creation",
         subtitle: widget.tag?.title,
         returnButton: true,
-        callBack: () => Navigator.pop(context),
+        callBack: () => Navigator.popUntil(context, (route) => route.isFirst),
       ),
       body: Column(
         children: [
@@ -251,6 +251,7 @@ class _TagSettingPageState extends State<TagSettingPage> {
                   style: context.buttonStyles.primary,
                   child: Text(
                     "Add Tasks",
+                    textAlign: TextAlign.center,
                     style: context.textStyles.light.bodyMedium,
                   ),
                 ),
@@ -263,6 +264,7 @@ class _TagSettingPageState extends State<TagSettingPage> {
                   style: context.buttonStyles.secondary,
                   child: Text(
                     "Save",
+                    textAlign: TextAlign.center,
                     style: context.textStyles.dark.bodyMedium,
                   ),
                 ),
@@ -272,7 +274,7 @@ class _TagSettingPageState extends State<TagSettingPage> {
           SizedBox(height: context.hgap2),
 
           /*  Delete Tag */
-          if (tag!.uID != controller.getSystemTag) ...[
+          if (tag!.uID != controller.getSystemTag && tag.uID != "") ...[
             SizedBox(
               width: context.screenWidth * 0.75,
               child: ElevatedButton(

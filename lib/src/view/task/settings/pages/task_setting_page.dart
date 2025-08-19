@@ -65,7 +65,7 @@ class _TaskSettingPageState extends State<TaskSettingPage> {
         title: widget.task != null ? "Task - Adjustment" : "Task - Creation",
         subtitle: widget.task?.title,
         returnButton: true,
-        callBack: () => Navigator.pop(context),
+        callBack: () => Navigator.popUntil(context, (route) => route.isFirst),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: context.hgap5),
