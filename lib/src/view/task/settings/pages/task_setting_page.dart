@@ -1,13 +1,21 @@
+// ignore_for_file: use_build_context_synchronously
+
+/*  General Import */
+import 'package:todopomodoro/src/core/widgets/models/custom_button.dart';
+import 'package:todopomodoro/src/view/task/settings/widgets/tag_listing.dart';
+import 'package:todopomodoro/src/view/task/settings/widgets/task_duration_picker.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
-import 'package:todopomodoro/src/core/utils/provider/app_provider.dart';
-import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
-import 'package:todopomodoro/src/core/data/tag.dart';
+/*  Provider - Import */
+import 'package:todopomodoro/src/core/provider/app_provider.dart';
 
-/* Task-Logik - Importert */
-import 'package:todopomodoro/src/core/data/task.dart';
-import 'package:uuid/uuid.dart';
+/*  Data - Import */
+import 'package:todopomodoro/src/core/data/data.dart' show Task, Tag;
+
+/* Custom Widgets - Import */
+import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
 
 class TaskSettingPage extends StatefulWidget {
   const TaskSettingPage({super.key, this.task});
@@ -39,14 +47,24 @@ class _TaskSettingPageState extends State<TaskSettingPage> {
 
     task =
         widget.task ?? Task(uID: '', title: '', duration: Duration(minutes: 5));
+
     _textController.text = task!.title;
 
-    tagIds = context
-        .read<AppProvider>()
-        .tags
-        .where((tag) => tag.taskList.contains(task!.uID))
-        .map((tag) => tag.uID)
-        .toList();
+    // Tags über den Provider laden
+    if (task!.uID != '') {
+      _loadTagsFromProvider();
+    }
+  }
+
+  Future<void> _loadTagsFromProvider() async {
+    final appProvider = context.read<AppProvider>();
+
+    // Tags der Task laden
+    final tags = await appProvider.readAllTagsfromTask(task: task!);
+
+    setState(() {
+      tagIds = tags.map((tag) => tag.uID).toList();
+    });
   }
 
   @override
@@ -70,6 +88,7 @@ class _TaskSettingPageState extends State<TaskSettingPage> {
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: context.hgap5),
         child: Column(
+          spacing: context.hgap2,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /*  Task-Name  */
@@ -77,15 +96,44 @@ class _TaskSettingPageState extends State<TaskSettingPage> {
             SizedBox(height: context.hgap5),
 
             /*  Tag-Liste */
-            _tagListing(),
+            TagListing(
+              allTags: tags,
+              chosenTags: tagIds,
+              onTagPressed: (tagId) {
+                setState(() {
+                  if (tagIds.contains(tagId)) {
+                    tagIds.remove(tagId);
+                  } else {
+                    tagIds.add(tagId);
+                  }
+                });
+              },
+            ),
             SizedBox(height: context.hgap5),
 
             /* Task-Dauer */
-            _taskDuration(),
+            TaskDurationPicker(
+              duration: task!.duration,
+              onChanged: (duration) {
+                setState(() {
+                  task!.duration = duration;
+                });
+              },
+            ),
             SizedBox(height: context.hgap5),
 
             /* Task-Save  */
-            _taskSave(),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: context.hgap2,
+                horizontal: context.wgap5,
+              ),
+              child: SizedBox(
+                width: context.screenWidth * 0.30,
+                height: context.screenHeight * 0.05,
+                child: WhiteButton(label: "Save", func: _saveTask),
+              ),
+            ),
             SizedBox(height: context.hgap2),
           ],
         ),
@@ -100,11 +148,7 @@ class _TaskSettingPageState extends State<TaskSettingPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(
-            top: context.hgap5,
-            left: context.wgap5,
-            bottom: context.hgap2,
-          ),
+          padding: EdgeInsets.only(top: context.hgap5, left: context.wgap5),
           child: Text("Task", style: context.textStyles.dark.labelSmall),
         ),
         Padding(
@@ -131,180 +175,58 @@ class _TaskSettingPageState extends State<TaskSettingPage> {
     );
   }
 
-  Widget _tagListing() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: context.wgap5, bottom: context.hgap2),
-          child: Text(
-            "Associated Tags",
-            style: context.textStyles.dark.labelSmall,
+  /*  Functions */
+  Future<void> _saveTask() async {
+    if (task!.title.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Task name can't be empty!",
+            style: context.textStyles.highlight.labelSmall,
+            textAlign: TextAlign.center,
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.wgap5),
-          child: CustomContainer(
-            hightLimit: 0.10,
-            childWidget: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                childAspectRatio: 2.5,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: tags.length - 1,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final Tag tag = tags[index + 1];
-                final bool taskInTag = tagIds.contains(tag.uID);
+      );
+      return;
+    }
 
-                return ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(
-                      taskInTag
-                          ? context.appStyle.buttonBackgroundLight.withValues(
-                              alpha: 0.25,
-                            )
-                          : context.appStyle.buttonBackgroundLight,
-                    ),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      if (taskInTag) {
-                        tagIds.remove(tag.uID);
-                      } else {
-                        tagIds.add(tag.uID);
-                      }
-                    });
-                  },
-                  child: Text(
-                    tag.title,
-                    style: TextStyle(color: context.appStyle.writingHighlight),
-                  ),
-                );
-              },
-            ),
+    // Speichern oder Updaten
+    if (task!.uID.isNotEmpty) {
+      await controller.updateTask(task!);
+    } else {
+      final newId = const Uuid().v4();
+      task!.uID = newId;
+
+      await controller.addTask(
+        Task(uID: task!.uID, title: task!.title, duration: task!.duration),
+      );
+    }
+
+    // Tags speichern – jetzt als Batch
+    await Future.wait([
+      for (String tag in tagIds)
+        controller.addTaskToTag(taskUID: task!.uID, tagUID: tag),
+    ]);
+
+    // Snackbar anzeigen
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Task successfully saved!",
+            style: context.textStyles.highlight.labelSmall,
+            textAlign: TextAlign.center,
           ),
+          duration: const Duration(milliseconds: 800),
         ),
-      ],
-    );
-  }
+      );
+    }
 
-  Widget _taskDuration() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: context.wgap5, bottom: context.hgap2),
-          child: Text(
-            "Duration of the Task - ${task!.duration.inMinutes} min",
-            style: context.textStyles.dark.labelSmall,
-          ),
-        ),
-
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.wgap5),
-          child: CustomContainer(
-            hightLimit: 0.15,
-            childWidget: Scrollbar(
-              child: ListWheelScrollView.useDelegate(
-                itemExtent: 45,
-                perspective: 0.002,
-                diameterRatio: 1.5,
-                onSelectedItemChanged: (index) {
-                  setState(() {
-                    task!.duration = Duration(minutes: index);
-                  });
-                },
-                childDelegate: ListWheelChildBuilderDelegate(
-                  builder: (context, index) => Center(
-                    child: Text(
-                      index.toString().padLeft(2, '0'),
-                      style: context.textStyles.highlight.labelLarge,
-                    ),
-                  ),
-                  childCount: 91,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _taskSave() {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: context.hgap2,
-            horizontal: context.wgap5,
-          ),
-          child: SizedBox(
-            width: context.screenWidth * 0.30,
-            height: context.screenHeight * 0.04,
-            child: ElevatedButton(
-              onPressed: () async {
-                if (task!.title.trim().isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        "Task name can't be empty!",
-                        style: context.textStyles.highlight.labelSmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                  return;
-                }
-                if (task!.uID != '') {
-                  await controller.updateTask(task!);
-                } else {
-                  task!.uID = const Uuid().v4();
-
-                  await controller.addTask(
-                    Task(
-                      uID: task!.uID,
-                      title: task!.title,
-                      duration: task!.duration,
-                    ),
-                  );
-                }
-
-                for (String tag in tagIds) {
-                  await controller.addTaskToTag(
-                    taskUID: task!.uID,
-                    tagUID: tag,
-                  );
-                }
-
-                // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      "Task successfully saved!",
-                      // ignore: use_build_context_synchronously
-                      style: context.textStyles.highlight.labelSmall,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                );
-
-                // ignore: use_build_context_synchronously
-                Navigator.pop(context);
-              },
-              style: context.buttonStyles.secondary,
-              child: Text(
-                "Save",
-                style: context.textStyles.highlight.bodyMedium,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+    // Navigation ENTKOPPELT vom Frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Navigator.popUntil(context, (route) => route.isFirst);
+      }
+    });
   }
 }

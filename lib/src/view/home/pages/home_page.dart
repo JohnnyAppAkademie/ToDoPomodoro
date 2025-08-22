@@ -1,5 +1,8 @@
+/* General Import */
 import 'package:flutter/material.dart';
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+
+/* Custom Widget's - Import */
 import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
 
 class HomePage extends StatelessWidget {

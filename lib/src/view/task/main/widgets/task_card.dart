@@ -1,11 +1,17 @@
+/* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
-import 'package:todopomodoro/src/core/utils/provider/app_provider.dart';
-import 'package:todopomodoro/src/core/data/tag.dart';
-import 'package:todopomodoro/src/core/data/task.dart';
-import 'package:todopomodoro/src/view/pomodoro/pages/pomodoro_page.dart';
-import 'package:todopomodoro/src/view/task/settings/pages/task_setting_page.dart';
+
+/*  Provider - Import */
+import 'package:todopomodoro/src/core/provider/app_provider.dart';
+
+/*  Data - Import */
+import 'package:todopomodoro/src/core/data/data.dart';
+
+/* Page - Import */
+import 'package:todopomodoro/src/view/view.dart'
+    show TaskSettingPage, PomodoroTimerPage;
 
 class TaskCard extends StatelessWidget {
   const TaskCard({super.key, required this.tag, required this.task});
@@ -144,7 +150,7 @@ class TaskCard extends StatelessWidget {
   void _deleteButtonPress(BuildContext context) {
     final appProvider = context.read<AppProvider>();
 
-    if (tag.uID == appProvider.tagRepo.getDefaultTagUID) {
+    if (tag.uID == appProvider.getDefaultTagUID) {
       appProvider.deleteTask(task.uID);
     } else {
       appProvider.removeTaskFromTag(tagUID: tag.uID, taskUID: task.uID);

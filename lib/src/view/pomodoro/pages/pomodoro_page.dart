@@ -1,13 +1,15 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
-import 'package:todopomodoro/src/core/data/task.dart';
 
-/* Shared Widgets - Import  */
+/* Data - Import */
+import 'package:todopomodoro/src/core/data/models/task.dart';
+
+/* Custom Widgets - Import  */
 import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
 
 /*  Pomodoro - Logik and Design */
-import 'package:todopomodoro/src/core/data/pomodoro_timer.dart';
+import 'package:todopomodoro/src/core/data/models/pomodoro_timer.dart';
 import 'package:todopomodoro/src/view/pomodoro/widgets/pomodoro_timer.dart';
 
 class PomodoroTimerPage extends StatelessWidget {

@@ -1,11 +1,12 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+
 /*  Tag - Logik  */
-import 'package:todopomodoro/src/core/data/tag.dart';
+import 'package:todopomodoro/src/core/data/models/tag.dart';
+
 /* Page - Import */
-import 'package:todopomodoro/src/view/task/main/pages/task_page.dart';
-import 'package:todopomodoro/src/view/tag/settings/pages/tag_setting_page.dart';
+import 'package:todopomodoro/src/view/view.dart' show TaskPage, TagSettingPage;
 
 /// __TagCard__ - Class
 /// <br> Beinhaltet den Aufbau der TaskCard. <br>
@@ -69,7 +70,7 @@ class TagCard extends StatelessWidget {
                   Expanded(
                     child: cardButton(
                       context,
-                      Icons.checklist_outlined,
+                      Icons.list,
                       "Open",
                       () => taskButtonPress(context, tag),
                     ),

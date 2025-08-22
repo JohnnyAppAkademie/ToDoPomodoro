@@ -1,26 +1,28 @@
 /*  Basic - Import  */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/src/core/data/data.dart' show Tag;
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
-import 'package:todopomodoro/src/core/utils/provider/app_provider.dart';
+
+/* Provider - Import */
+import 'package:todopomodoro/src/core/provider/app_provider.dart';
+
+/* Custom Widget's - Import */
 import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
 
-/*  Pages - Import  */
-import 'package:todopomodoro/src/view/tag/main/pages/tag_page.dart';
-import 'package:todopomodoro/src/view/home/pages/home_page.dart';
-import 'package:todopomodoro/src/view/tag/settings/pages/tag_setting_page.dart';
-import 'package:todopomodoro/src/view/task/main/pages/task_page.dart';
-import 'package:todopomodoro/src/view/task/settings/pages/task_setting_page.dart';
-import 'package:todopomodoro/src/view/history/pages/history_page.dart';
+/* Pages - Import */
+import 'package:todopomodoro/src/view/view.dart';
 
-class MyMainPage extends StatefulWidget {
-  const MyMainPage({super.key});
+/*  Pages - Import  */
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<MyMainPage> createState() => _MyMainPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _MyMainPageState extends State<MyMainPage> {
+class _MainPageState extends State<MainPage> {
   int _selectedPage = 0;
 
   @override
@@ -37,7 +39,8 @@ class _MyMainPageState extends State<MyMainPage> {
       /* Task - Screen (SystemTag) */
       TaskPage(
         tag: appController.tags.firstWhere(
-          (tag) => tag.uID == appController.getSystemTag,
+          (tag) => tag.uID == appController.getDefaultTagUID,
+          orElse: () => Tag(uID: '', title: 'Default'),
         ),
       ),
 

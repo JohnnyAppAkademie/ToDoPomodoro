@@ -1,8 +1,10 @@
-import 'dart:ui';
-
+/* General Import */
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
-import 'package:todopomodoro/src/core/data/task.dart';
+
+/* Data - Import  */
+import 'package:todopomodoro/src/core/data/models/task.dart';
 
 class TaskSelectionDialog extends StatefulWidget {
   final List<Task> allTasks;

@@ -1,8 +1,11 @@
+/* General - Import */
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todopomodoro/src/core/theme/themes.dart';
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
-import 'package:todopomodoro/src/core/data/pomodoro_timer.dart';
+
+/* Data - Import */
+import 'package:todopomodoro/src/core/data/models/pomodoro_timer.dart';
 
 /// __PomodoroWidget__ - Klasse
 /// <br> Die Oberklasse für das Pomodoro-Widget, was aufgerufen werden kann. <br>

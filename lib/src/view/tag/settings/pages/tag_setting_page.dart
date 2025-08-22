@@ -1,19 +1,19 @@
 // ignore_for_file: use_build_context_synchronously
 
-/* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:todopomodoro/src/core/extensions/context_extension.dart';
-import 'package:todopomodoro/src/core/utils/provider/app_provider.dart';
-import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
 
-/*  Custom Widgets - Import */
+/* Provider - Import */
+import 'package:todopomodoro/src/core/provider/app_provider.dart';
+
+/* Custom Widget's - Import */
+import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
 import 'package:todopomodoro/src/view/tag/settings/widgets/task_selection.dialog.dart';
 
 /* Tag / Task - Import */
-import 'package:todopomodoro/src/core/data/tag.dart';
-import 'package:todopomodoro/src/core/data/task.dart';
-import 'package:uuid/uuid.dart';
+import 'package:todopomodoro/src/core/data/data.dart';
 
 class TagSettingPage extends StatefulWidget {
   const TagSettingPage({super.key, this.tag});
@@ -25,34 +25,33 @@ class TagSettingPage extends StatefulWidget {
 }
 
 class _TagSettingPageState extends State<TagSettingPage> {
-  /* Für denn Fall, dass ein Task übergeben wird */
   Tag? tag;
+  List<Task> allTasks = [];
+  List<Task> selectedTasks = [];
 
-  /* Liste aller Tasks */
-  late List<Task> tasks = [];
-
-  /*  Set der Tasks in diesem Tag */
-  late Set<String> taskSet;
-
-  /* Text - Controller */
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _textController = TextEditingController();
-
-  /* Controller */
   late AppProvider controller;
 
   @override
   void initState() {
     super.initState();
-    tag = widget.tag ?? Tag(uID: '', title: '', taskList: []);
-    taskSet = tag!.taskList.toSet();
+    tag = widget.tag ?? Tag(uID: '', title: '');
     _textController.text = tag!.title;
+    _loadData();
+  }
 
-    tasks = context
-        .read<AppProvider>()
-        .tasks
-        .where((task) => tag!.taskList.contains(task.uID))
-        .toList();
+  Future<void> _loadData() async {
+    controller = context.read<AppProvider>();
+    allTasks = controller.tasks;
+
+    if (tag!.uID.isNotEmpty) {
+      selectedTasks = await controller.readAllTasks(tag: tag!);
+    } else {
+      selectedTasks = [];
+    }
+
+    setState(() {});
   }
 
   @override
@@ -72,15 +71,10 @@ class _TagSettingPageState extends State<TagSettingPage> {
       ),
       body: Column(
         children: [
-          /*  Tag-Name */
           _tagNaming(),
           SizedBox(height: context.hgap5),
-
-          /*  Task-List */
           _taskListing(),
           SizedBox(height: context.hgap5),
-
-          /*  Tag - Optionen  */
           _tagOptions(tag: tag),
           SizedBox(height: context.hgap5),
         ],
@@ -88,7 +82,6 @@ class _TagSettingPageState extends State<TagSettingPage> {
     );
   }
 
-  /*  Widgets */
   Widget _tagNaming() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,19 +122,16 @@ class _TagSettingPageState extends State<TagSettingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /*  Label  */
         Padding(
           padding: EdgeInsets.only(left: context.wgap5),
           child: Text("Tasks", style: context.textStyles.dark.labelSmall),
         ),
-        /*  Task - Liste */
         Padding(
           padding: EdgeInsets.only(
             top: context.hgap2,
             left: context.wgap5,
             right: context.wgap5,
           ),
-          /*  Container */
           child: CustomContainer(
             hightLimit: 0.25,
             childWidget: Container(
@@ -157,21 +147,9 @@ class _TagSettingPageState extends State<TagSettingPage> {
               ),
               child: Scrollbar(
                 child: ListView.builder(
-                  itemCount: tag!.taskList.length,
+                  itemCount: selectedTasks.length,
                   itemBuilder: (context, index) {
-                    final task = controller.tasks.firstWhere(
-                      (t) => t.uID == tag!.taskList[index],
-                      orElse: () => Task(
-                        uID: "INVALID",
-                        title: "Task not found",
-                        duration: Duration.zero,
-                      ),
-                    );
-
-                    if (task.uID == "INVALID") {
-                      return SizedBox.shrink();
-                    }
-
+                    final task = selectedTasks[index];
                     return Padding(
                       padding: EdgeInsets.only(bottom: context.hgap1),
                       child: Container(
@@ -208,7 +186,7 @@ class _TagSettingPageState extends State<TagSettingPage> {
                                   style: context.buttonStyles.secondary,
                                   onPressed: () {
                                     setState(() {
-                                      tag!.taskList.removeAt(index);
+                                      selectedTasks.removeAt(index);
                                     });
                                   },
                                   child: Icon(
@@ -260,7 +238,28 @@ class _TagSettingPageState extends State<TagSettingPage> {
                 width: context.screenWidth * 0.30,
                 height: context.screenHeight * 0.04,
                 child: ElevatedButton(
-                  onPressed: _saveTag,
+                  onPressed: () async {
+                    final success = await _saveTagData();
+                    if (!mounted) return;
+
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!mounted) return;
+
+                      if (!success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Tag name can't be empty!")),
+                        );
+                        return;
+                      }
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Tag successfully saved!")),
+                      );
+
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    });
+                  },
+
                   style: context.buttonStyles.secondary,
                   child: Text(
                     "Save",
@@ -272,17 +271,20 @@ class _TagSettingPageState extends State<TagSettingPage> {
             ],
           ),
           SizedBox(height: context.hgap2),
-
-          /*  Delete Tag */
-          if (tag!.uID != controller.getSystemTag && tag.uID != "") ...[
+          if (tag!.uID != controller.getDefaultTagUID && tag.uID != "") ...[
             SizedBox(
               width: context.screenWidth * 0.75,
               child: ElevatedButton(
                 style: context.buttonStyles.primary,
                 onPressed: () {
-                  if (tag.uID != controller.getSystemTag) {
-                    controller.deleteTag(tag.uID);
+                  if (tag.uID == controller.getDefaultTagUID) return;
 
+                  WidgetsBinding.instance.addPostFrameCallback((_) async {
+                    if (!mounted) return;
+
+                    await controller.deleteTag(tag.uID);
+
+                    if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -290,17 +292,15 @@ class _TagSettingPageState extends State<TagSettingPage> {
                           style: context.textStyles.highlight.labelSmall,
                           textAlign: TextAlign.center,
                         ),
-                        duration: Duration(seconds: 1, milliseconds: 45),
+                        duration: const Duration(milliseconds: 1045),
                       ),
                     );
 
+                    if (!mounted) return;
                     Navigator.pop(context);
-                  }
+                  });
                 },
-                child: Text(
-                  "Delete Tag",
-                  style: context.textStyles.light.labelLarge,
-                ),
+                child: Text('Delete Tag'),
               ),
             ),
             SizedBox(height: context.hgap2),
@@ -310,10 +310,9 @@ class _TagSettingPageState extends State<TagSettingPage> {
     );
   }
 
-  /*  Dialoge */
   Future<void> _openTaskSelectionDialog(BuildContext context) async {
     final tasks = controller.tasks;
-    final currentSelection = tag!.taskList.toSet();
+    final currentSelection = selectedTasks.map((t) => t.uID).toSet();
 
     await showDialog(
       context: context,
@@ -323,50 +322,30 @@ class _TagSettingPageState extends State<TagSettingPage> {
         initiallySelected: currentSelection,
         onSave: (selectedIds) {
           setState(() {
-            tag!.taskList = selectedIds.toList();
+            selectedTasks = tasks
+                .where((t) => selectedIds.contains(t.uID))
+                .toList();
           });
         },
       ),
     );
   }
 
-  /*  Funktionen  */
-  Future<void> _saveTag() async {
-    if (tag == null) return;
+  Future<bool> _saveTagData() async {
+    if (tag == null || tag!.title.trim().isEmpty) return false;
 
-    if (tag!.title.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Tag name can't be empty!",
-            style: context.textStyles.highlight.labelSmall,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-      return;
-    }
-
-    if (tag!.uID != "") {
+    if (tag!.uID.isNotEmpty) {
       await controller.updateTag(tag!);
     } else {
-      final newUID = const Uuid().v4();
-
-      await controller.addTag(
-        Tag(uID: newUID, title: tag!.title, taskList: tag!.taskList),
-      );
+      final newId = const Uuid().v4();
+      tag = Tag(uID: newId, title: tag!.title, updatedAt: DateTime.now());
+      await controller.addTag(tag!);
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          "Tag successfully saved!",
-          style: context.textStyles.highlight.labelSmall,
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
+    for (Task task in selectedTasks) {
+      await controller.addTaskToTag(tagUID: tag!.uID, taskUID: task.uID);
+    }
 
-    Navigator.pop(context);
+    return true;
   }
 }
