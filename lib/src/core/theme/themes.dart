@@ -357,6 +357,13 @@ ThemeData standardTheme(AppStyle style) {
       }),
     ),
 
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: style.writingLight,
+      contentTextStyle: highlightStyle.labelSmall,
+      behavior: SnackBarBehavior.floating,
+      elevation: 6,
+    ),
+
     /* Extension  */
     extensions: [
       AppButtonStyles(

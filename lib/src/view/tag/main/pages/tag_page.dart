@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 /*  Provider - Import */
-import 'package:todopomodoro/src/core/provider/app_provider.dart';
+import 'package:todopomodoro/src/core/provider/providers.dart'
+    show TaskProvider;
+import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Custom Widgets - Import */
-import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
+import 'package:todopomodoro/src/widgets/custom_widgets.dart';
 import 'package:todopomodoro/src/view/tag/main/widgets/tag_card.dart';
 
 class TagPage extends StatelessWidget {
@@ -14,27 +16,35 @@ class TagPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tagController = Provider.of<AppProvider>(context);
+    final tagController = Provider.of<TaskProvider>(context);
 
     if (tagController.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    final filteredTags = tagController.tags
+        .where((tag) => tag != tagController.getDefaultTag)
+        .toList();
+
     return Scaffold(
-      appBar: AppHeaderWidget(title: "Tags", returnButton: false),
+      appBar: AppHeaderWidget(title: "Tags"),
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: tagController.tags.length,
-              itemBuilder: (BuildContext context, int index) {
-                final tag = tagController.tags[index];
-                return TagCard(
-                  tag: tag,
-                  settingEnabled: tag.uID != tagController.getDefaultTagUID,
-                );
-              },
-            ),
+            child: filteredTags.isEmpty
+                ? Center(
+                    child: Text(
+                      "Keine Tags",
+                      style: context.textStyles.dark.titleSmall,
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: filteredTags.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final tag = filteredTags[index];
+                      return TagCard(tag: tag);
+                    },
+                  ),
           ),
         ],
       ),

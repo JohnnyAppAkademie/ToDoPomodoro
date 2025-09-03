@@ -1,5 +1,4 @@
-import 'package:todopomodoro/src/core/data/models/task.dart';
-
+import 'package:todopomodoro/src/core/data/data.dart' show Task;
 import 'package:todopomodoro/src/core/database/database.dart';
 
 class TaskRepository {

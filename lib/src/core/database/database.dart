@@ -1,5 +1,8 @@
+/* General Import */
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:todopomodoro/src/core/database/tables.dart'
+    show UserTable, TaskTable, TagTable, TaskTagTable;
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -21,57 +24,10 @@ class DatabaseHelper {
   }
 
   Future _createDB(Database db, int version) async {
-    // TASKS
-    await db.execute('''
-      CREATE TABLE tasks (
-        db_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        u_id TEXT NOT NULL,
-        title TEXT NOT NULL,
-        duration INTEGER NOT NULL,
-        updated_at TEXT NOT NULL
-      )
-    ''');
-
-    // TAGS
-    await db.execute('''
-      CREATE TABLE tags (
-        db_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        u_id TEXT NOT NULL,
-        title TEXT NOT NULL,
-        updated_at TEXT NOT NULL
-      )
-    ''');
-
-    // TASK_TAGS (n:m Join-Tabelle)
-    await db.execute('''
-      CREATE TABLE task_tags (
-        task_uid TEXT NOT NULL,
-        tag_uid TEXT NOT NULL,
-        PRIMARY KEY (task_uid, tag_uid),
-        FOREIGN KEY (task_uid) REFERENCES tasks (u_id) ON DELETE CASCADE,
-        FOREIGN KEY (tag_uid) REFERENCES tags (u_id) ON DELETE CASCADE
-      )
-    ''');
-
-    // HISTORY
-    await db.execute('''
-      CREATE TABLE history (
-        db_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        u_id TEXT NOT NULL,
-        task_uid TEXT NOT NULL,
-        tag_uid TEXT NOT NULL, 
-        finished INTEGER NOT NULL,
-        started_at TEXT NOT NULL,
-        ended_at TEXT,
-        FOREIGN KEY (task_uid) REFERENCES tasks (u_id)
-      )
-    ''');
-
-    await db.execute('CREATE INDEX idx_history_task_uid ON history(task_uid)');
-    await db.execute(
-      'CREATE INDEX idx_history_started_at ON history(started_at)',
-    );
-    await db.execute('CREATE INDEX idx_history_finished ON history(finished)');
+    await UserTable.create(db);
+    await TaskTable.create(db);
+    await TagTable.create(db);
+    await TaskTagTable.create(db);
   }
 
   Future close() async {

@@ -1,9 +1,9 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
-import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /*  Tag - Logik  */
-import 'package:todopomodoro/src/core/data/models/tag.dart';
+import 'package:todopomodoro/src/core/data/data.dart' show Tag;
 
 /* Page - Import */
 import 'package:todopomodoro/src/view/view.dart' show TaskPage, TagSettingPage;
@@ -12,11 +12,9 @@ import 'package:todopomodoro/src/view/view.dart' show TaskPage, TagSettingPage;
 /// <br> Beinhaltet den Aufbau der TaskCard. <br>
 /// <br> __Required__:
 /// * Der Tag, welcher für den Aufbau der TagCard benötigt wird __[Tag : tag]__
-/// * Ein Flag, ob Settings für die TagCard vorhanden sein soll oder nicht __[bool : settingEnabled]__
 class TagCard extends StatelessWidget {
-  const TagCard({super.key, required this.tag, required this.settingEnabled});
+  const TagCard({super.key, required this.tag});
   final Tag tag;
-  final bool settingEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +54,10 @@ class TagCard extends StatelessWidget {
             ),
             /* Lower Header */
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              padding: EdgeInsets.symmetric(
+                vertical: context.hgap2,
+                horizontal: context.wgap2,
+              ),
               width: double.infinity,
               height: 60,
               decoration: BoxDecoration(
@@ -75,17 +76,15 @@ class TagCard extends StatelessWidget {
                       () => taskButtonPress(context, tag),
                     ),
                   ),
-                  if (settingEnabled) ...[
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: cardButton(
-                        context,
-                        Icons.settings_outlined,
-                        "Settings",
-                        () => settingButtonPress(context, tag),
-                      ),
+                  SizedBox(width: context.wgap2),
+                  Expanded(
+                    child: cardButton(
+                      context,
+                      Icons.settings_outlined,
+                      "Settings",
+                      () => settingButtonPress(context, tag),
                     ),
-                  ],
+                  ),
                 ],
               ),
             ),

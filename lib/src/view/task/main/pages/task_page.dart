@@ -1,16 +1,17 @@
 /*  General Import  */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /*  Provider - Import */
-import 'package:todopomodoro/src/core/provider/app_provider.dart';
+import 'package:todopomodoro/src/core/provider/providers.dart'
+    show TaskProvider;
 
-/*  Data Import  */
-import 'package:todopomodoro/src/core/data/data.dart';
+/*  Data - Import  */
+import 'package:todopomodoro/src/core/data/data.dart' show Tag, Task;
 
 /* Custom Widgets - Import */
-import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
+import 'package:todopomodoro/src/widgets/custom_widgets.dart';
 import 'package:todopomodoro/src/view/task/main/widgets/task_card.dart';
 
 class TaskPage extends StatelessWidget {
@@ -19,7 +20,7 @@ class TaskPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final taskController = context.watch<AppProvider>();
+    final taskController = context.watch<TaskProvider>();
     if (taskController.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -27,12 +28,7 @@ class TaskPage extends StatelessWidget {
     final displayTag = tag ?? taskController.getDefaultTag;
 
     return Scaffold(
-      appBar: AppHeaderWidget(
-        title: "Tasks",
-        subtitle: displayTag.title,
-        returnButton: true,
-        callBack: () => Navigator.pop(context),
-      ),
+      appBar: AppHeaderWidget(title: "Tasks", subtitle: displayTag.title),
       body: FutureBuilder<List<Task>>(
         future: taskController.readAllTasks(tag: displayTag),
         builder: (context, snapshot) {

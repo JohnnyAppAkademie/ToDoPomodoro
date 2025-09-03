@@ -1,50 +1,63 @@
 /*  Basic - Import  */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todopomodoro/src/core/data/data.dart' show Tag;
-import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
-import 'package:todopomodoro/src/core/provider/app_provider.dart';
+import 'package:todopomodoro/src/core/provider/providers.dart'
+    show TaskProvider;
 
 /* Custom Widget's - Import */
-import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
+import 'package:todopomodoro/src/widgets/custom_widgets.dart';
 
 /* Pages - Import */
 import 'package:todopomodoro/src/view/view.dart';
 
-/*  Pages - Import  */
+/*  Data - Import  */
+import 'package:todopomodoro/src/core/data/data.dart' show Tag;
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  const MainPage({super.key, required this.pageNo});
+
+  final int pageNo;
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  int _selectedPage = 0;
+  late int _selectedPage;
+
+  @override
+  void initState() {
+    _selectedPage = widget.pageNo;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final appController = context.watch<AppProvider>();
+    final controller = context.watch<TaskProvider>();
+
+    if (controller.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final defaultTag = controller.tags.firstWhere(
+      (tag) => tag.uID == controller.getDefaultTagUID,
+      orElse: () => controller.tags.isNotEmpty
+          ? controller.tags.first
+          : Tag(
+              uID: controller.getDefaultTagUID,
+              title: 'All Tasks',
+              updatedAt: DateTime.now(),
+              userID: '',
+            ),
+    );
 
     List<Widget> pages = [
-      /* Main - Screen */
       HomePage(),
-
-      /* Tag - Screen */
       TagPage(),
-
-      /* Task - Screen (SystemTag) */
-      TaskPage(
-        tag: appController.tags.firstWhere(
-          (tag) => tag.uID == appController.getDefaultTagUID,
-          orElse: () => Tag(uID: '', title: 'Default'),
-        ),
-      ),
-
-      /* Settings - Screen */
+      TaskPage(tag: defaultTag),
       HistoryPage(),
     ];
 
@@ -65,7 +78,7 @@ class _MainPageState extends State<MainPage> {
             const SizedBox(width: 48),
             /* Platz für den Add-Button */
             destinationButton(iconData: Icons.list, pagePosition: 2),
-            destinationButton(iconData: Icons.settings, pagePosition: 3),
+            destinationButton(iconData: Icons.history, pagePosition: 3),
           ],
         ),
       ),

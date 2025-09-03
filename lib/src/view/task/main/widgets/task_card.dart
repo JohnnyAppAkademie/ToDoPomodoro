@@ -1,10 +1,6 @@
 /* General Import */
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:todopomodoro/src/core/extensions/context_extension.dart';
-
-/*  Provider - Import */
-import 'package:todopomodoro/src/core/provider/app_provider.dart';
+import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /*  Data - Import */
 import 'package:todopomodoro/src/core/data/data.dart';
@@ -81,15 +77,6 @@ class TaskCard extends StatelessWidget {
                   Expanded(
                     child: cardButton(
                       context: context,
-                      iconData: Icons.delete_outline_outlined,
-                      label: "Delete",
-                      callBack: () => _deleteButtonPress(context),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: cardButton(
-                      context: context,
                       iconData: Icons.play_arrow_outlined,
                       label: "Start",
                       callBack: () => _taskButtonPress(context),
@@ -143,17 +130,9 @@ class TaskCard extends StatelessWidget {
   void _settingButtonPress(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => TaskSettingPage(task: task)),
+      MaterialPageRoute(
+        builder: (context) => TaskSettingPage(task: task, tag: tag),
+      ),
     );
-  }
-
-  void _deleteButtonPress(BuildContext context) {
-    final appProvider = context.read<AppProvider>();
-
-    if (tag.uID == appProvider.getDefaultTagUID) {
-      appProvider.deleteTask(task.uID);
-    } else {
-      appProvider.removeTaskFromTag(tagUID: tag.uID, taskUID: task.uID);
-    }
   }
 }

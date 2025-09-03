@@ -1,16 +1,28 @@
+/* General Import */
 import 'package:uuid/uuid.dart';
 
 class Tag {
   int? dbID;
   String uID;
+  final String userID;
   String title;
   DateTime updatedAt;
 
-  Tag({this.dbID, required this.uID, required this.title, DateTime? updatedAt})
-    : updatedAt = updatedAt ?? DateTime.now();
+  Tag({
+    this.dbID,
+    required this.uID,
+    required this.title,
+    required this.userID,
+    DateTime? updatedAt,
+  }) : updatedAt = updatedAt ?? DateTime.now();
 
-  factory Tag.newTag(String title) {
-    return Tag(uID: const Uuid().v4(), title: title, updatedAt: DateTime.now());
+  factory Tag.newTag({required String title, required String userID}) {
+    return Tag(
+      uID: const Uuid().v4(),
+      title: title,
+      userID: userID,
+      updatedAt: DateTime.now(),
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -18,6 +30,7 @@ class Tag {
       'db_id': dbID,
       'u_id': uID,
       'title': title,
+      'user_id': userID,
       'updated_at': updatedAt.toIso8601String(),
     };
   }
@@ -27,6 +40,7 @@ class Tag {
       dbID: map['db_id'],
       uID: map['u_id'],
       title: map['title'],
+      userID: map['user_id'],
       updatedAt: DateTime.parse(map['updated_at']),
     );
   }

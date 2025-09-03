@@ -1,42 +1,39 @@
-/*  Basic Import  */
+/* General Import */
 import 'package:flutter/material.dart';
-import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+import 'package:provider/provider.dart';
+
+/* Provider - Import */
+import 'package:todopomodoro/src/core/provider/providers.dart'
+    show UserProvider, HistoryProvider;
+
+/* View Model - Import */
+import 'package:todopomodoro/src/view/pomodoro/logic/pomodoro_logic.dart';
 
 /* Data - Import */
-import 'package:todopomodoro/src/core/data/models/task.dart';
+import 'package:todopomodoro/src/core/data/data.dart' show Task;
 
-/* Custom Widgets - Import  */
-import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
-
-/*  Pomodoro - Logik and Design */
-import 'package:todopomodoro/src/core/data/models/pomodoro_timer.dart';
-import 'package:todopomodoro/src/view/pomodoro/widgets/pomodoro_timer.dart';
+/* Custom-Widget - Import */
+import 'package:todopomodoro/src/view/pomodoro/widgets/pomodoro_widget.dart';
 
 class PomodoroTimerPage extends StatelessWidget {
-  const PomodoroTimerPage({super.key, required this.task});
-
   final Task task;
+
+  const PomodoroTimerPage({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appStyle.background,
-      appBar: AppHeaderWidget(
-        title: "Pomodoro-Task",
-        subtitle: task.title,
-        returnButton: true,
-        callBack: () => Navigator.pop(context),
+    final userID = context.read<UserProvider>().currentUser!.uID;
+    final HistoryProvider historyProvider = context.watch<HistoryProvider>();
+
+    return ChangeNotifierProvider(
+      create: (_) => PomodoroViewModel(
+        userID: userID,
+        task: task,
+        historyProvider: historyProvider,
       ),
-      body: Center(
-        child: Column(
-          children: [
-            SizedBox(height: 25),
-            PomodoroWidget(
-              taskDuration: task.duration,
-              mode: TimeUnitMode.minutes,
-            ),
-          ],
-        ),
+      child: Scaffold(
+        appBar: AppBar(title: Text(task.title)),
+        body: PomodoroWidget(),
       ),
     );
   }

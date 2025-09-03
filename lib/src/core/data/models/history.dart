@@ -1,53 +1,82 @@
+/* Genral Import */
 import 'package:uuid/uuid.dart';
 
-class History {
-  int? dbID;
+/// `HistoryEntry`- Class <br>
+/// <br>  Creates a History-Entries.  <br>
+class HistoryEntry {
   final String uID;
-  final String taskUID;
-  final String tagUID;
+  final String taskName;
+  final String userID;
   bool finished;
-  final DateTime startedAt;
+  DateTime startedAt;
   DateTime? endedAt;
 
-  History({
-    this.dbID,
+  /// `HistoryEntry` - Constructor <br>
+  /// <br>  __Do not use this constructor,__
+  /// <br>  __use `HistoryEntry.newHistoryEntry` instead__ <br>
+  HistoryEntry({
     required this.uID,
-    required this.taskUID,
-    required this.tagUID,
+    required this.taskName,
+    required this.userID,
     required this.finished,
     required this.startedAt,
     this.endedAt,
   });
 
-  factory History.newTag(String taskUID, String tagUID) {
-    return History(
+  /// `HistoryEntry` - Constructor (Factory) <br>
+  /// <br>  Creates a new `HistoryEntry`-Object.  <br>
+  /// <br>  __Required:__ <br>
+  /// * [__String : taskName__] - _The Name of the Task_
+  /// * [__String : userID__] - _The ID of the User_
+  ///
+  /// <br>  __Optional:__ <br>
+  /// * [__DateTime : startedAt__]  - _The startime of the Task_
+  /// * [__bool : finished__] - _Was the Task finished?_
+  /// * [__DateTime : endedAt__]  - _The endtime of the Task_
+  factory HistoryEntry.newHistoryEntry({
+    required String taskName,
+    required String userID,
+    bool finished = false,
+    DateTime? startedAt,
+    DateTime? endedAt,
+  }) {
+    return HistoryEntry(
       uID: const Uuid().v4(),
-      taskUID: taskUID,
-      tagUID: tagUID,
-      finished: false,
-      startedAt: DateTime.now(),
+      taskName: taskName,
+      userID: userID,
+      finished: finished,
+      startedAt: startedAt ?? DateTime.now(),
+      endedAt: endedAt,
     );
   }
 
-  Map<String, dynamic> toMap() => {
-    'db_id': dbID,
-    'u_id': uID,
-    'task_uid': taskUID,
-    'tag_uid': taskUID,
-    'finished': finished ? 1 : 0,
-    'started_at': startedAt.toIso8601String(),
-    'ended_at': endedAt?.toIso8601String(),
-  };
+  /// `HistoryEntry` - Constructor (Factory) <br>
+  /// <br> Creats a `HistoryEntry`-Object from a Json-Map <br>
+  /// <br>  __Required:__ <br>
+  /// * [__Map<String, dynamic> : json__] - _The Json-Data which gets transformed_
+  factory HistoryEntry.fromJson(Map<String, dynamic> json) {
+    return HistoryEntry(
+      uID: json['u_id'],
+      taskName: json['task_name'],
+      userID: json['user_id'],
+      finished: json['finished'] == 1,
+      startedAt: DateTime.parse(json['started_at']),
+      endedAt: json['ended_at'] != null
+          ? DateTime.tryParse(json['ended_at'])
+          : null,
+    );
+  }
 
-  factory History.fromMap(Map<String, dynamic> map) => History(
-    dbID: map['db_id'] as int?,
-    uID: map['u_id'] as String,
-    taskUID: map['task_uid'] as String,
-    tagUID: map['tag_uid'] as String,
-    finished: (map['finished'] as int) == 1,
-    startedAt: DateTime.parse(map['started_at'] as String),
-    endedAt: map['ended_at'] != null
-        ? DateTime.parse(map['ended_at'] as String)
-        : null,
-  );
+  /// `Map<String, dynamic>` - toJson <br>
+  /// <br> Converts a `HistoryEntry`-Object into a Json-Object <br>
+  Map<String, dynamic> toJson() {
+    return {
+      'u_id': uID,
+      'task_name': taskName,
+      'user_id': userID,
+      'finished': finished ? 1 : 0,
+      'started_at': startedAt.toIso8601String(),
+      'ended_at': endedAt?.toIso8601String(),
+    };
+  }
 }

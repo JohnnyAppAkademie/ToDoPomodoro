@@ -1,5 +1,10 @@
+/* General Import */
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+
+/* Data - Import */
+import 'package:todopomodoro/src/core/data/data.dart' show Task;
+import 'package:todopomodoro/src/core/data/models/history.dart';
 
 /*  Schalter für die Testung von Sekunden / Minuten */
 enum TimeUnitMode { minutes, seconds }
@@ -61,14 +66,29 @@ class PomodoroTimer {
   );
   final ValueNotifier<String> currentPhaseVN = ValueNotifier("Idle");
 
+  /* History Entry */
+  late HistoryEntry _historyEntry;
+
   ///  __PomodoroTimer__ - Konstruktor:
   /// <br> Der Timer, welcher für Pausen und Timer benutzt wird <br>
   /// <br>__Benötigt:__
   /// * Die angegebene Zeit der Aufgabe __[Duration : taskDuration]__
   /// * Ein Flag, ob es sich um Tests handelt __[TimeUnitMode : mode]__ -> ( [TimeUnitMode: seconds, minutes ] )
-  PomodoroTimer({required this.taskDuration, required this.mode}) {
-    /* Je nach Modus kann sessionLength angepasst werden  */
+  PomodoroTimer({
+    required Task task,
+    required String userID,
+    TimeUnitMode? mode,
+  }) {
+    this.mode = mode ?? TimeUnitMode.minutes;
     sessionLength = getSessionLength();
+    taskDuration = task.duration;
+
+    _historyEntry = HistoryEntry.newHistoryEntry(
+      userID: userID,
+      taskName: task.title,
+      finished: false,
+      startedAt: DateTime.now(),
+    );
 
     /*  Berechnen der Anzahl von Pausen */
     if (taskDuration != Duration.zero) {
@@ -123,6 +143,8 @@ class PomodoroTimer {
       return;
     }
 
+    _historyEntry.startedAt = DateTime.now();
+
     taskRunning = true; //  Die Task ist nun am Laufen
     int completedPomodoros = 0; //  Anzahl der passierten Sessions
     userCancelled = false; //  Der User hat die Task noch nicht gestopt
@@ -143,6 +165,8 @@ class PomodoroTimer {
         currentPhaseVN.value = "Finished";
         remainingSessionTimeVN.value = Duration.zero;
         remainingTaskTimeVN.value = Duration.zero;
+        _historyEntry.finished = true;
+        _historyEntry.endedAt = DateTime.now();
         return;
       }
       /*  Wenn die Task gecanceled wurde  */

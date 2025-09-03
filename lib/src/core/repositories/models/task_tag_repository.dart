@@ -17,24 +17,30 @@ class TaskTagRepository {
     );
   }
 
-  Future<List<String>> getTagsForTask(String taskUID) async {
+  Future<List<String>> getTagsForTask(
+    String taskUID, {
+    required String userId,
+  }) async {
     final db = await dbHelper.database;
     final result = await db.query(
       'task_tags',
       columns: ['tag_uid'],
-      where: 'task_uid = ?',
-      whereArgs: [taskUID],
+      where: 'task_uid = ? AND user_id = ?',
+      whereArgs: [taskUID, userId],
     );
     return result.map((e) => e['tag_uid'] as String).toList();
   }
 
-  Future<List<String>> getTasksForTag(String tagUID) async {
+  Future<List<String>> getTasksForTag(
+    String tagUID, {
+    required String userId,
+  }) async {
     final db = await dbHelper.database;
     final result = await db.query(
       'task_tags',
       columns: ['task_uid'],
-      where: 'tag_uid = ?',
-      whereArgs: [tagUID],
+      where: 'tag_uid = ? AND user_id = ?',
+      whereArgs: [tagUID, userId],
     );
     return result.map((e) => e['task_uid'] as String).toList();
   }

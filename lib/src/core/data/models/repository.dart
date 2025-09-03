@@ -1,3 +1,4 @@
+/// `Repostitory` - Abstract class
 abstract class Repository<T> {
   /* Fetch all */
   Future<List<T>> getAll();

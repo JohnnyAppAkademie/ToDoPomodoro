@@ -1,17 +1,31 @@
 /* General Import */
 import 'package:flutter/material.dart';
-import 'package:todopomodoro/src/core/extensions/context_extension.dart';
+import 'package:provider/provider.dart';
+import 'package:todopomodoro/src/core/util/context_extension.dart';
+
+/* Provider - Import */
+import 'package:todopomodoro/src/core/provider/providers.dart'
+    show UserProvider;
 
 /* Custom Widget's - Import */
-import 'package:todopomodoro/src/core/widgets/custom_widgets.dart';
+import 'package:todopomodoro/src/widgets/custom_widgets.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    UserProvider controller = context.watch<UserProvider>();
+
+    if (controller.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
-      appBar: AppHeaderWidget(title: "Welcome", subtitle: "user"),
+      appBar: AppHeaderWidget(
+        title: "Welcome",
+        subtitle: controller.currentUser!.username,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

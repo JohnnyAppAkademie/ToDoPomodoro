@@ -1,44 +1,44 @@
 /* General Import */
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /* Theme Import */
 import 'package:todopomodoro/src/core/theme/themes.dart';
 
 /* Provider Import */
-import 'package:todopomodoro/src/core/provider/app_provider.dart';
+import 'package:todopomodoro/src/core/provider/providers.dart'
+    show TaskProvider, UserProvider, HistoryProvider;
 
-/* Main Page - Import */
-import 'package:todopomodoro/src/view/app_shell/pages/main_page.dart';
+/* Service Import */
+import 'package:todopomodoro/src/services/history_service.dart';
+
+/* Start Page - Import */
+import 'package:todopomodoro/src/view/view.dart'
+    show AuthWrapper, MainPage, LoginPage;
 
 /* SQLite Helper Import */
 import 'src/core/database/database.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
-
   await DatabaseHelper.instance.database;
+  await HistoryService.initialize();
 
-  runApp(const InitApp());
-}
-
-class InitApp extends StatelessWidget {
-  const InitApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AppProvider())],
-      child: MyApp(),
-    );
-  }
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => HistoryProvider()),
+        ChangeNotifierProxyProvider<UserProvider, TaskProvider>(
+          create: (_) => TaskProvider(null),
+          update: (_, userProvider, previousTaskProvider) {
+            return TaskProvider(userProvider);
+          },
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -50,7 +50,11 @@ class MyApp extends StatelessWidget {
       theme: standardTheme(AppStyle.standard()),
       debugShowCheckedModeBanner: false,
       title: 'ToDo & Pomodoro',
-      home: const MainPage(),
+      home: const AuthWrapper(),
+      routes: {
+        '/main': (context) => MainPage(pageNo: 0),
+        '/login': (context) => const LoginPage(),
+      },
     );
   }
 }
