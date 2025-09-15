@@ -89,7 +89,6 @@ class _LoginPageState extends State<LoginPage> {
               CustomContainer(
                 childWidget: CustomTextField(
                   textController: userController,
-                  focusNode: FocusNode(),
                   topic: "Please enter your Email or Username",
                   isPassword: false,
                   onChanged: (value) => {},
@@ -100,7 +99,6 @@ class _LoginPageState extends State<LoginPage> {
               CustomContainer(
                 childWidget: CustomTextField(
                   textController: passwordController,
-                  focusNode: FocusNode(),
                   topic: 'Please enter your Password',
                   isPassword: true,
                   onChanged: (value) => {},

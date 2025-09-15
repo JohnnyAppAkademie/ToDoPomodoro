@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppHeaderWidget(
+      appBar: CustomAppBar(
         title: "Welcome",
         subtitle: controller.currentUser!.username,
       ),

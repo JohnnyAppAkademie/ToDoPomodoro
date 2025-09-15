@@ -45,7 +45,7 @@ class TagSettingViewModel extends ChangeNotifier {
   }
 
   void _init() async {
-    allTasks = appProvider.tasks;
+    allTasks = await appProvider.getAllTasks();
 
     if (tag.uID.isNotEmpty) {
       selectedTasks = await appProvider.readAllTasks(tag: tag);

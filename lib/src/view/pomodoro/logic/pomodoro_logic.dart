@@ -60,7 +60,12 @@ class PomodoroViewModel extends ChangeNotifier {
   }
 
   void _startSession(Duration duration) {
-    remainingSessionTime = duration;
+    if (remainingTaskTime < duration) {
+      remainingSessionTime = remainingTaskTime;
+    } else {
+      remainingSessionTime = duration;
+    }
+
     phase = PomodoroPhase.pomodoro;
 
     _timer?.cancel();

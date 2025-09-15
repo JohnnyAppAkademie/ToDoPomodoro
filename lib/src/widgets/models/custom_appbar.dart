@@ -11,8 +11,8 @@ import 'package:todopomodoro/src/core/provider/providers.dart'
 import 'package:todopomodoro/src/view/setting/page/setting_page.dart';
 
 /* Custom Appbar */
-class AppHeaderWidget extends StatelessWidget implements PreferredSizeWidget {
-  const AppHeaderWidget({super.key, required this.title, this.subtitle});
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const CustomAppBar({super.key, required this.title, this.subtitle});
 
   final String title;
   final String? subtitle;

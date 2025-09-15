@@ -28,7 +28,6 @@ class Task {
 
   Map<String, dynamic> toMap() {
     return {
-      'db_id': dbID,
       'u_id': uID,
       'user_id': userID,
       'title': title,

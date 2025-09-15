@@ -2,6 +2,7 @@
 import 'package:uuid/uuid.dart';
 
 /// `HistoryEntry`- Class <br>
+/// <br> __Info:__
 /// <br>  Creates a History-Entries.  <br>
 class HistoryEntry {
   final String uID;
@@ -12,6 +13,7 @@ class HistoryEntry {
   DateTime? endedAt;
 
   /// `HistoryEntry` - Constructor <br>
+  /// <br>  __Info:__
   /// <br>  __Do not use this constructor,__
   /// <br>  __use `HistoryEntry.newHistoryEntry` instead__ <br>
   HistoryEntry({
@@ -24,6 +26,7 @@ class HistoryEntry {
   });
 
   /// `HistoryEntry` - Constructor (Factory) <br>
+  /// <br>  __Info:__
   /// <br>  Creates a new `HistoryEntry`-Object.  <br>
   /// <br>  __Required:__ <br>
   /// * [__String : taskName__] - _The Name of the Task_
@@ -51,6 +54,7 @@ class HistoryEntry {
   }
 
   /// `HistoryEntry` - Constructor (Factory) <br>
+  /// <br>  __Info:__
   /// <br> Creats a `HistoryEntry`-Object from a Json-Map <br>
   /// <br>  __Required:__ <br>
   /// * [__Map<String, dynamic> : json__] - _The Json-Data which gets transformed_
@@ -67,8 +71,9 @@ class HistoryEntry {
     );
   }
 
-  /// `Map<String, dynamic>` - toJson <br>
-  /// <br> Converts a `HistoryEntry`-Object into a Json-Object <br>
+  /// `HistoryEntry - toJson()` <br>
+  /// <br>  __Info:__
+  /// <br> Converts the `HistoryEntry` object into a JSON-compatible map.
   Map<String, dynamic> toJson() {
     return {
       'u_id': uID,

@@ -119,8 +119,8 @@ class TaskProvider with ChangeNotifier {
     await db.update(
       'tasks',
       task.toMap(),
-      where: 'u_id = ?',
-      whereArgs: [task.uID],
+      where: 'u_id = ? AND user_id = ?',
+      whereArgs: [task.uID, userID],
     );
     await _loadTasks();
   }
@@ -130,6 +130,17 @@ class TaskProvider with ChangeNotifier {
     final db = await DatabaseHelper.instance.database;
     await db.delete('tasks', where: 'u_id = ?', whereArgs: [taskUID]);
     await _loadTasks();
+  }
+
+  Future<Task> getTask(String taskUID) async {
+    return _tasks.firstWhere(
+      (t) => t.uID == taskUID,
+      orElse: () => throw Exception("Task not found"),
+    );
+  }
+
+  Future<List<Task>> getAllTasks() async {
+    return _tasks;
   }
 
   // ---------- Tags ---------- //
@@ -156,8 +167,8 @@ class TaskProvider with ChangeNotifier {
     await db.update(
       'tags',
       tag.toMap(),
-      where: 'u_id = ?',
-      whereArgs: [tag.uID],
+      where: 'u_id = ? AND user_id = ?',
+      whereArgs: [tag.uID, userID],
     );
     await _loadTags();
   }
@@ -171,6 +182,17 @@ class TaskProvider with ChangeNotifier {
 
     await db.delete('tags', where: 'u_id = ?', whereArgs: [tagUID]);
     await _loadTags();
+  }
+
+  Future<Tag> getTag(String tagUID) async {
+    return _tags.firstWhere(
+      (t) => t.uID == tagUID,
+      orElse: () => throw Exception("Tag not found"),
+    );
+  }
+
+  Future<List<Tag>> getAllTags() async {
+    return _tags;
   }
 
   Future<void> _ensureDefaultTag(Database db) async {
@@ -281,9 +303,9 @@ class TaskProvider with ChangeNotifier {
       SELECT t.*
       FROM tasks t
       INNER JOIN task_tags tt ON t.u_id = tt.task_uid
-      WHERE tt.tag_uid = ?
+      WHERE tt.tag_uid = ? AND t.user_id = ?
     ''',
-      [tag.uID],
+      [tag.uID, userID],
     );
 
     return rows.map((e) => Task.fromMap(e)).toList();

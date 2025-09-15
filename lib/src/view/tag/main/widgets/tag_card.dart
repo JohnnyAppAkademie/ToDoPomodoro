@@ -1,9 +1,14 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
+/* Provider - Import */
+import 'package:todopomodoro/src/core/provider/providers.dart'
+    show TaskProvider;
+
 /*  Tag - Logik  */
-import 'package:todopomodoro/src/core/data/data.dart' show Tag;
+import 'package:todopomodoro/src/core/data/data.dart' show Tag, Task;
 
 /* Page - Import */
 import 'package:todopomodoro/src/view/view.dart' show TaskPage, TagSettingPage;
@@ -18,79 +23,107 @@ class TagCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        margin: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            /* Header */
-            Container(
-              padding: const EdgeInsets.all(16),
-              width: double.infinity,
+    return FutureBuilder<List<Task>>(
+      future: context.read<TaskProvider>().readAllTasks(tag: tag),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text("Fehler: ${snapshot.error}"));
+        } else {
+          // Calculate the total minutes from the tasks
+          final tasks = snapshot.data ?? [];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    context.appStyle.gradient1,
-                    context.appStyle.gradient2,
-                    context.appStyle.gradient3,
-                  ],
-                ),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
               ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(tag.title, style: context.textStyles.light.labelLarge),
+                  /* Header */
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          context.appStyle.gradient1,
+                          context.appStyle.gradient2,
+                          context.appStyle.gradient3,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          tag.title,
+                          style: context.textStyles.light.labelLarge,
+                        ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.format_list_bulleted,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              "${tasks.length.toString()} Entries",
+                              style: context.textStyles.light.labelSmall,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  /* Lower Header */
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: context.wgap2),
+                    width: double.infinity,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: context.appStyle.labelBackground,
+                      borderRadius: const BorderRadius.vertical(
+                        bottom: Radius.circular(16),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: cardButton(
+                            context,
+                            Icons.list,
+                            "Open",
+                            () => taskButtonPress(context, tag),
+                          ),
+                        ),
+                        SizedBox(width: context.wgap2),
+                        Expanded(
+                          child: cardButton(
+                            context,
+                            Icons.settings_outlined,
+                            "Settings",
+                            () => settingButtonPress(context, tag),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            /* Lower Header */
-            Container(
-              padding: EdgeInsets.symmetric(
-                vertical: context.hgap2,
-                horizontal: context.wgap2,
-              ),
-              width: double.infinity,
-              height: 60,
-              decoration: BoxDecoration(
-                color: context.appStyle.labelBackground,
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(16),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: cardButton(
-                      context,
-                      Icons.list,
-                      "Open",
-                      () => taskButtonPress(context, tag),
-                    ),
-                  ),
-                  SizedBox(width: context.wgap2),
-                  Expanded(
-                    child: cardButton(
-                      context,
-                      Icons.settings_outlined,
-                      "Settings",
-                      () => settingButtonPress(context, tag),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          );
+        }
+      },
     );
   }
 
@@ -113,7 +146,6 @@ class TagCard extends StatelessWidget {
       onPressed: callBack,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(iconData, size: 20, color: context.appStyle.writingHighlight),
           SizedBox(width: 4),

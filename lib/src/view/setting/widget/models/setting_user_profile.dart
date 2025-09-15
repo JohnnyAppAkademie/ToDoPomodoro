@@ -163,7 +163,6 @@ class _SettingUserProfileState extends State<SettingUserProfile> {
                                 child: CustomContainer(
                                   childWidget: CustomTextField(
                                     textController: usernameController,
-                                    focusNode: FocusNode(),
                                     onChanged: (String value) {},
                                     topic: "Enter your new Username",
                                     isPassword: false,

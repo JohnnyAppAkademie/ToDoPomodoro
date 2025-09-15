@@ -6,6 +6,7 @@ import 'package:todopomodoro/src/core/util/context_extension.dart';
 class CustomDialoge extends StatelessWidget {
   const CustomDialoge({
     super.key,
+    required this.dialogeLabel,
     required this.dialogeText,
     required this.leftButtonText,
     required this.leftButtonFunc,
@@ -13,6 +14,7 @@ class CustomDialoge extends StatelessWidget {
     required this.rightButtonFunc,
   });
 
+  final String dialogeLabel;
   final String dialogeText;
   final String leftButtonText;
   final VoidCallback leftButtonFunc;
@@ -73,6 +75,12 @@ class CustomDialoge extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Center(
+                      child: Text(
+                        dialogeLabel,
+                        style: context.textStyles.light.labelLarge,
+                      ),
+                    ),
                     // Dialogtext
                     Expanded(
                       child: Padding(

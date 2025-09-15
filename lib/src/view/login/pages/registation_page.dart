@@ -102,7 +102,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
               CustomContainer(
                 childWidget: CustomTextField(
                   textController: usernameController,
-                  focusNode: FocusNode(),
                   onChanged: (String value) {},
                   topic: 'Enter a Username',
                   isPassword: false,
@@ -114,7 +113,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
               CustomContainer(
                 childWidget: CustomTextField(
                   textController: emailController,
-                  focusNode: FocusNode(),
                   onChanged: (String value) {},
                   topic: 'Enter a Email',
                   isPassword: false,
@@ -126,7 +124,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
               CustomContainer(
                 childWidget: CustomTextField(
                   textController: passwordController,
-                  focusNode: FocusNode(),
                   onChanged: (String value) {},
                   topic: 'Enter a Password',
                   isPassword: true,

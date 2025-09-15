@@ -19,10 +19,15 @@ import 'package:todopomodoro/src/view/view.dart'
 /* SQLite Helper Import */
 import 'src/core/database/database.dart';
 
+/* Firebase - Import */
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DatabaseHelper.instance.database;
   await HistoryService.initialize();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
     MultiProvider(

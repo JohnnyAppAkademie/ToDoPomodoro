@@ -1,24 +1,42 @@
+/*  General Import  */
 import 'package:flutter/material.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
+
+/*  View Model - Import */
+import 'package:todopomodoro/src/view/task/settings/logic/task_setting_view_model.dart';
+
+/*  Custom Widgets - Import */
 import 'package:todopomodoro/src/widgets/custom_widgets.dart';
 
+/// `TaskNameInput` - Class <br>
+/// <br>  __Info:__
+/// <br>  Creates a TextField to choose a name for the Task <br>
+/// <br>  __Required:__ <br>
+/// * [ __TaskSettingViewModel : viewModel__ ] - A ViewModel for Logic-Functions
 class TaskNameInput extends StatefulWidget {
-  const TaskNameInput({
-    super.key,
-    required this.textController,
-    required this.focusNode,
-    required this.onChanged,
-  });
+  const TaskNameInput({super.key, required this.viewModel});
 
-  final TextEditingController textController;
-  final FocusNode focusNode;
-  final ValueChanged<String> onChanged;
+  final TaskSettingViewModel viewModel;
 
   @override
   State<TaskNameInput> createState() => _TaskNameInputState();
 }
 
 class _TaskNameInputState extends State<TaskNameInput> {
+  late TextEditingController taskNameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    taskNameController.text = widget.viewModel.task.title;
+  }
+
+  @override
+  void dispose() {
+    taskNameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -35,10 +53,8 @@ class _TaskNameInputState extends State<TaskNameInput> {
           CustomContainer(
             childWidget: CustomTextField(
               topic: "Enter a Taskname",
-              textController: widget.textController,
-              focusNode: widget.focusNode,
-              isPassword: false,
-              onChanged: widget.onChanged,
+              textController: taskNameController,
+              onChanged: widget.viewModel.updateTitle,
             ),
           ),
         ],

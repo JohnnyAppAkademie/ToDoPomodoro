@@ -9,6 +9,12 @@ import 'package:todopomodoro/src/core/data/data.dart';
 import 'package:todopomodoro/src/view/view.dart'
     show TaskSettingPage, PomodoroTimerPage;
 
+/// `TaskCard - Class` <br>
+/// <br>  __Info:__
+/// <br>  Creates a Card-Widget for Tasks.  <br>
+/// <br>  __Required:__
+/// * [ __Task : task__ ] - Given task for the card
+/// * [ __Tag : tag__ ] - Origin of the task
 class TaskCard extends StatelessWidget {
   const TaskCard({super.key, required this.tag, required this.task});
 
@@ -17,6 +23,10 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final breakCount = (task.duration.inMinutes / 25).floor();
+    final longBreaks = (breakCount / 4).floor();
+    final shortBreaks = breakCount - longBreaks;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -49,13 +59,49 @@ class TaskCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(task.title, style: context.textStyles.light.labelLarge),
-                  Row(
+                  Column(
                     children: [
-                      const Icon(Icons.timer, color: Colors.white, size: 16),
-                      const SizedBox(width: 6),
-                      Text(
-                        '${task.duration.inMinutes} min',
-                        style: context.textStyles.light.labelSmall,
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.timer,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${task.duration.inMinutes} min',
+                            style: context.textStyles.light.labelSmall,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          /* Short Breaks */
+                          Icon(
+                            Icons.free_breakfast_outlined,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          SizedBox(width: context.wgap2),
+                          Text(
+                            shortBreaks.toString(),
+                            style: context.textStyles.light.labelSmall,
+                          ),
+                          SizedBox(width: context.wgap2),
+
+                          /* Long Breaks */
+                          Icon(
+                            Icons.free_breakfast_sharp,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          SizedBox(width: context.wgap2),
+                          Text(
+                            longBreaks.toString(),
+                            style: context.textStyles.light.labelSmall,
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -63,7 +109,7 @@ class TaskCard extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              padding: EdgeInsets.symmetric(horizontal: context.wgap2),
               width: double.infinity,
               height: 60,
               decoration: BoxDecoration(
@@ -75,20 +121,31 @@ class TaskCard extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: cardButton(
-                      context: context,
+                    child: CardButton(
                       iconData: Icons.play_arrow_outlined,
                       label: "Start",
-                      callBack: () => _taskButtonPress(context),
+                      callBack: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PomodoroTimerPage(task: task),
+                          ),
+                        ),
+                      },
                     ),
                   ),
                   const SizedBox(width: 6),
                   Expanded(
-                    child: cardButton(
-                      context: context,
+                    child: CardButton(
                       iconData: Icons.settings_outlined,
                       label: "Settings",
-                      callBack: () => _settingButtonPress(context),
+                      callBack: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              TaskSettingPage(task: task, tag: tag),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -99,13 +156,29 @@ class TaskCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget cardButton({
-    required BuildContext context,
-    required IconData iconData,
-    required String label,
-    required VoidCallback callBack,
-  }) {
+/// `CardButton - Class` <br>
+/// <br>  __Info:__
+/// <br>  Creates a Button-Widget for the card.  <br>
+/// <br>  __Required:__
+/// * [ __IconData : iconData__ ] - A icon for the button
+/// * [ __String : label__ ] - The label for the button
+/// * [ __VoidCallback : callBack__ ] - OnPress function
+class CardButton extends StatelessWidget {
+  const CardButton({
+    super.key,
+    required this.iconData,
+    required this.label,
+    required this.callBack,
+  });
+
+  final IconData iconData;
+  final String label;
+  final VoidCallback callBack;
+
+  @override
+  Widget build(BuildContext context) {
     return ElevatedButton(
       style: context.buttonStyles.card,
       onPressed: callBack,
@@ -116,22 +189,6 @@ class TaskCard extends StatelessWidget {
           const SizedBox(width: 4),
           Text(label, style: context.textStyles.highlight.bodyMedium),
         ],
-      ),
-    );
-  }
-
-  void _taskButtonPress(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => PomodoroTimerPage(task: task)),
-    );
-  }
-
-  void _settingButtonPress(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TaskSettingPage(task: task, tag: tag),
       ),
     );
   }

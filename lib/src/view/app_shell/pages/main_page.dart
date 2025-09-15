@@ -88,6 +88,7 @@ class _MainPageState extends State<MainPage> {
           showDialog(
             context: context,
             builder: (context) => CustomDialoge(
+              dialogeLabel: "Adding Option",
               dialogeText: 'What do you want to add?',
               leftButtonText: 'Tag',
               leftButtonFunc: () {

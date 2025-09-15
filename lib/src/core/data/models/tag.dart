@@ -27,7 +27,6 @@ class Tag {
 
   Map<String, dynamic> toMap() {
     return {
-      'db_id': dbID,
       'u_id': uID,
       'title': title,
       'user_id': userID,

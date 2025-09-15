@@ -14,6 +14,7 @@ import 'package:todopomodoro/src/core/data/data.dart' show Task;
 
 /* Custom-Widget - Import */
 import 'package:todopomodoro/src/view/pomodoro/widgets/pomodoro_widget.dart';
+import 'package:todopomodoro/src/widgets/custom_widgets.dart' show CustomAppBar;
 
 class PomodoroTimerPage extends StatelessWidget {
   final Task task;
@@ -32,7 +33,10 @@ class PomodoroTimerPage extends StatelessWidget {
         historyProvider: historyProvider,
       ),
       child: Scaffold(
-        appBar: AppBar(title: Text(task.title)),
+        appBar: CustomAppBar(
+          title: task.title,
+          subtitle: "${task.duration.inMinutes.toString()} min",
+        ),
         body: PomodoroWidget(),
       ),
     );

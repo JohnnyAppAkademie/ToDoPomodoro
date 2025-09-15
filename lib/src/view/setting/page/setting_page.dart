@@ -27,7 +27,7 @@ class SettingPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppHeaderWidget(title: "Settings"),
+      appBar: CustomAppBar(title: "Settings"),
       body: Column(
         spacing: context.wgap5,
         children: [

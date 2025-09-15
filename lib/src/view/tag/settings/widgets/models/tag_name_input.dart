@@ -11,7 +11,6 @@ class TagNameInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = TextEditingController(text: viewModel.tag.title);
-    final focusNode = FocusNode();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +32,6 @@ class TagNameInput extends StatelessWidget {
             childWidget: CustomTextField(
               topic: "Enter a Tag name",
               textController: controller,
-              focusNode: focusNode,
               isPassword: false,
               onChanged: viewModel.updateTitle,
             ),

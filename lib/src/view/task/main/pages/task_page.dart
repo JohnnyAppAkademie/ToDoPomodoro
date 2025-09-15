@@ -14,6 +14,11 @@ import 'package:todopomodoro/src/core/data/data.dart' show Tag, Task;
 import 'package:todopomodoro/src/widgets/custom_widgets.dart';
 import 'package:todopomodoro/src/view/task/main/widgets/task_card.dart';
 
+/// `TaskPage - Class` <br>
+/// <br>  __Info:__
+/// <br>  The Main-Page for choosing Tasks <br>
+/// <br>  __Required:__
+/// * [ __Tag : tag__ ] - The tag with the tasks
 class TaskPage extends StatelessWidget {
   const TaskPage({super.key, required this.tag});
   final Tag? tag;
@@ -28,7 +33,7 @@ class TaskPage extends StatelessWidget {
     final displayTag = tag ?? taskController.getDefaultTag;
 
     return Scaffold(
-      appBar: AppHeaderWidget(title: "Tasks", subtitle: displayTag.title),
+      appBar: CustomAppBar(title: "Tasks", subtitle: displayTag.title),
       body: FutureBuilder<List<Task>>(
         future: taskController.readAllTasks(tag: displayTag),
         builder: (context, snapshot) {

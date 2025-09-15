@@ -38,7 +38,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
     if (historyList.isEmpty) {
       return Scaffold(
-        appBar: AppHeaderWidget(title: "History"),
+        appBar: CustomAppBar(title: "History"),
         body: Center(
           child: Text(
             "Keine History gefunden",
@@ -56,7 +56,7 @@ class _HistoryPageState extends State<HistoryPage> {
     final groupedHistory = _groupByDate(sortedHistory);
 
     return Scaffold(
-      appBar: AppHeaderWidget(title: "History"),
+      appBar: CustomAppBar(title: "History"),
       body: Padding(
         padding: EdgeInsets.symmetric(
           vertical: context.hgap2,

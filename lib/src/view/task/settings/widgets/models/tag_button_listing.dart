@@ -1,22 +1,33 @@
+/* General Import */
 import 'package:flutter/material.dart';
-import 'package:todopomodoro/src/core/data/data.dart' show Tag;
 import 'package:todopomodoro/src/core/util/context_extension.dart';
+
+/* View Model - Import */
+import 'package:todopomodoro/src/view/task/settings/logic/task_setting_view_model.dart';
+
+/* Data - Import */
+import 'package:todopomodoro/src/core/data/data.dart' show Tag;
+
+/* Custom Widgets - Import */
 import 'package:todopomodoro/src/widgets/custom_widgets.dart';
 
-class TagButtonListing extends StatelessWidget {
-  const TagButtonListing({
-    super.key,
-    required this.allTags,
-    required this.selectedTags,
-    required this.onTagPressed,
-  });
+/// `TagButtonListing` - Class <br>
+/// <br>  __Info:__
+/// <br>  Creates a Grid of usable Buttons.
+/// <br>  Each Button-Use will add the Task to the corrosponding Tag. <br>
+/// <br>  __Required:__ <br>
 
-  final List<Tag> allTags;
-  final List<String> selectedTags;
-  final ValueChanged<String> onTagPressed;
+/// * [ __TaskSettingViewModel : viewModel__ ] - A ViewModel for Logic-Functions
+class TagButtonListing extends StatelessWidget {
+  const TagButtonListing({super.key, required this.viewModel});
+
+  final TaskSettingViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
+    final List<Tag> allTags = viewModel.allTags;
+    final List<String> selectedTags = viewModel.selectedTagIds;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -61,7 +72,7 @@ class TagButtonListing extends StatelessWidget {
                                     .withValues(alpha: 0.25),
                         ),
                       ),
-                      onPressed: () => onTagPressed(tag.uID),
+                      onPressed: () => viewModel.toggleTagSelection(tag.uID),
                       child: Text(
                         tag.title,
                         style: TextStyle(

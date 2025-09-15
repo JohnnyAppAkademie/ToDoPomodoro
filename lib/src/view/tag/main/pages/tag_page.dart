@@ -27,7 +27,7 @@ class TagPage extends StatelessWidget {
         .toList();
 
     return Scaffold(
-      appBar: AppHeaderWidget(title: "Tags"),
+      appBar: CustomAppBar(title: "Tags"),
       body: Column(
         children: [
           Expanded(

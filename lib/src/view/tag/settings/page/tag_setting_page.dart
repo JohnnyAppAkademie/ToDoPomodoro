@@ -60,7 +60,7 @@ class TagSettingPage extends StatelessWidget {
           }
 
           return Scaffold(
-            appBar: AppHeaderWidget(
+            appBar: CustomAppBar(
               title: tag != null ? "Tag - Adjustment" : "Tag - Creation",
               subtitle: tag?.title,
             ),

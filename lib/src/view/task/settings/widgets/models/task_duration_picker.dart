@@ -1,16 +1,22 @@
+/*  General Import  */
 import 'package:flutter/material.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
+
+/*  View Model - Import  */
+import 'package:todopomodoro/src/view/task/settings/logic/task_setting_view_model.dart';
+
+/*  Custom Widgets - Import */
 import 'package:todopomodoro/src/widgets/custom_widgets.dart';
 
+/// `TaskDurationPicker` - Class <br>
+/// <br>  __Info:__
+/// <br>  Creates a Widget to choose the duration of a task. <br>
+/// <br>  __Required:__ <br>
+/// * [ __TaskSettingViewModel : viewModel__ ] - A ViewModel for Logic-Functions
 class TaskDurationPicker extends StatefulWidget {
-  final Duration duration;
-  final ValueChanged<Duration> onChanged;
+  final TaskSettingViewModel viewModel;
 
-  const TaskDurationPicker({
-    super.key,
-    required this.duration,
-    required this.onChanged,
-  });
+  const TaskDurationPicker({super.key, required this.viewModel});
 
   @override
   State<TaskDurationPicker> createState() => _TaskDurationPickerState();
@@ -21,17 +27,14 @@ class _TaskDurationPickerState extends State<TaskDurationPicker> {
   late TextEditingController _textController;
   late FocusNode _focusNode;
 
-  int get currentMinutes =>
-      int.tryParse(_textController.text) ?? widget.duration.inMinutes;
-
   @override
   void initState() {
     super.initState();
     _controller = FixedExtentScrollController(
-      initialItem: widget.duration.inMinutes - 1,
+      initialItem: widget.viewModel.task.duration.inMinutes - 1,
     );
     _textController = TextEditingController(
-      text: widget.duration.inMinutes.toString(),
+      text: widget.viewModel.task.duration.inMinutes.toString(),
     );
     _focusNode = FocusNode();
   }
@@ -44,11 +47,39 @@ class _TaskDurationPickerState extends State<TaskDurationPicker> {
     super.dispose();
   }
 
+  /* Get-Function */
+
+  /// `TaskDurationPicker - getcurrentMinutes()` <br>
+  /// <br>  __Info:__
+  /// <br>  Get-Function to return the currently chosen Duration of the Task. <br>
+  int get getcurrentMinutes =>
+      int.tryParse(_textController.text) ??
+      widget.viewModel.task.duration.inMinutes;
+
+  /// `TaskDurationPicker - formattedDuration()` <br>
+  /// <br>  __Info:__
+  /// <br>  Get-Function to return the currently chosen Duration as a String. <br>
+  String get formattedDuration {
+    final hours = widget.viewModel.task.duration.inHours;
+    final minutes = widget.viewModel.task.duration.inMinutes % 60;
+    if (hours > 0) {
+      return "${hours}h ${minutes.toString().padLeft(2, '0')}min";
+    }
+    return "${widget.viewModel.task.duration.inMinutes} min";
+  }
+
+  /*  Functions */
+
+  /// `TaskDurationPicker - _updateMinutes()` <br>
+  /// <br>  __Info:__
+  /// <br>  Updates the task with the new duration <br>
+  /// <br>  __Required:__ <br>
+  /// [ __int : newMinutes__] - The Duration ( in minutes ) for the update
   void _updateMinutes(int newMinutes) {
     if (newMinutes < 1) newMinutes = 1;
     if (newMinutes > 120) newMinutes = 120;
 
-    widget.onChanged(Duration(minutes: newMinutes));
+    widget.viewModel.updateDuration(Duration(minutes: newMinutes));
     _textController.text = newMinutes.toString();
 
     if (_controller.selectedItem != newMinutes - 1) {
@@ -64,15 +95,6 @@ class _TaskDurationPickerState extends State<TaskDurationPicker> {
     );
   }
 
-  String get formattedDuration {
-    final hours = widget.duration.inHours;
-    final minutes = widget.duration.inMinutes % 60;
-    if (hours > 0) {
-      return "${hours}h ${minutes.toString().padLeft(2, '0')}min";
-    }
-    return "${widget.duration.inMinutes} min";
-  }
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -80,7 +102,7 @@ class _TaskDurationPickerState extends State<TaskDurationPicker> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Label
+          /* Label */
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: context.wgap5,
@@ -92,7 +114,7 @@ class _TaskDurationPickerState extends State<TaskDurationPicker> {
                   "Duration of the Task -",
                   style: context.textStyles.dark.labelSmall,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: context.wgap5),
                 Text(
                   formattedDuration,
                   style: context.textStyles.highlight.labelSmall,
@@ -100,6 +122,8 @@ class _TaskDurationPickerState extends State<TaskDurationPicker> {
               ],
             ),
           ),
+
+          /* Duration Picker */
           SizedBox(
             height: context.screenHeight * 0.20,
             width: context.screenWidth * 0.90,
@@ -118,7 +142,7 @@ class _TaskDurationPickerState extends State<TaskDurationPicker> {
                         icon: const Icon(Icons.remove),
                         color: context.appStyle.writingHighlight,
                         style: context.buttonStyles.secondary,
-                        onPressed: () => _updateMinutes(currentMinutes - 1),
+                        onPressed: () => _updateMinutes(getcurrentMinutes - 1),
                       ),
                       // Scrollrad
                       SizedBox(
@@ -157,10 +181,12 @@ class _TaskDurationPickerState extends State<TaskDurationPicker> {
                       ),
 
                       IconButton(
-                        icon: const Icon(Icons.add),
+                        icon: Icon(Icons.add),
                         style: context.buttonStyles.secondary,
                         color: context.appStyle.writingHighlight,
-                        onPressed: () => _updateMinutes(currentMinutes + 1),
+                        onPressed: () => _updateMinutes(
+                          widget.viewModel.task.duration.inMinutes + 1,
+                        ),
                       ),
                     ],
                   ),
