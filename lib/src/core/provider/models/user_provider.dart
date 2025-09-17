@@ -1,19 +1,12 @@
-/* General Import */
+// lib/src/providers/user_provider.dart
 import 'package:flutter/foundation.dart';
-
-/* Data - Import */
 import 'package:todopomodoro/src/core/data/data.dart' show User;
-
-/* Database - Import */
 import 'package:todopomodoro/src/core/database/database.dart';
-
-/* Repository - Import */
 import 'package:todopomodoro/src/core/repositories/repositories.dart'
-    show UserRepository;
+    show UserRepository, FirebaseAuthRepository;
 
-/* Service - Import */
-import 'package:todopomodoro/src/services/session_service.dart';
 import 'package:todopomodoro/src/services/user_service.dart';
+import 'package:todopomodoro/src/services/session_service.dart';
 
 class UserProvider with ChangeNotifier {
   late final UserService service;
@@ -28,15 +21,10 @@ class UserProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // DB initialisieren
     final db = await DatabaseHelper.instance.database;
+    service = UserService(UserRepository(db), FirebaseAuthRepository());
 
-    // Service mit Repository erstellen
-    service = UserService(UserRepository(db));
-
-    // Optional: aktuellen User aus Session laden
     await loadCurrentUser();
-
     _isLoading = false;
     notifyListeners();
   }
@@ -45,7 +33,6 @@ class UserProvider with ChangeNotifier {
   User? get currentUser => _currentUser;
   bool get isLoggedIn => _currentUser != null;
 
-  /// Registrierung
   Future<bool> register({
     required String username,
     required String email,
@@ -64,43 +51,39 @@ class UserProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      if (kDebugMode) {
-        print('Registration error: $e');
-      }
+      if (kDebugMode) print('Registration error: $e');
       return false;
     }
   }
 
-  /// Login
   Future<bool> login(String email, String password, {Duration? delay}) async {
-    if (delay != null) {
-      await Future.delayed(delay);
-    }
-
-    final user = await service.login(email, password);
-    if (user != null) {
-      _currentUser = user;
-      await SessionManager.saveUserId(user.uID);
-      notifyListeners();
-      return true;
+    if (delay != null) await Future.delayed(delay);
+    try {
+      final user = await service.login(email, password);
+      if (user != null) {
+        _currentUser = user;
+        await SessionManager.saveUserId(user.uID);
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      if (kDebugMode) print('Login error: $e');
     }
     return false;
   }
 
-  /// Logout
   Future<void> logout() async {
+    await service.logout();
     _currentUser = null;
     await SessionManager.clearSession();
     notifyListeners();
   }
 
-  /// Passwort ändern
   Future<void> changePassword(String newPassword) async {
     if (_currentUser == null) return;
     await service.changePassword(_currentUser!.uID, newPassword);
   }
 
-  /// Lade aktuellen User aus Session
   Future<void> loadCurrentUser() async {
     final userId = await SessionManager.getUserId();
     if (userId != null) {
@@ -111,23 +94,15 @@ class UserProvider with ChangeNotifier {
 
   Future<void> updateProfilePicture(String newProfilePath) async {
     if (_currentUser == null) return;
-
-    // Lokales Update
     _currentUser!.profilePath = newProfilePath;
-
-    // Datenbank aktualisieren
     await service.updateProfilePicture(_currentUser!.uID, newProfilePath);
-
     notifyListeners();
   }
 
   Future<void> updateUsername(String newUsername) async {
     if (_currentUser == null) return;
-
     _currentUser!.username = newUsername;
-
     await service.updateUsername(_currentUser!.uID, newUsername);
-
     notifyListeners();
   }
 

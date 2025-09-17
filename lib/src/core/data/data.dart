@@ -4,3 +4,4 @@ export 'package:todopomodoro/src/core/data/models/history.dart';
 export 'package:todopomodoro/src/core/data/models/user.dart';
 export 'package:todopomodoro/src/core/data/models/repository.dart';
 export 'package:todopomodoro/src/core/data/models/pomodoro_timer.dart';
+export 'package:todopomodoro/src/core/data/models/auth_repository.dart';
