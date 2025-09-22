@@ -15,7 +15,7 @@ class DeleteTagButton extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           backgroundColor: context.appStyle.columnBackground.withValues(
-            alpha: 0.75,
+            alpha: 0.85,
           ),
           title: Text(
             "Delete Tag",
@@ -46,7 +46,7 @@ class DeleteTagButton extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.appStyle.buttonBackgroundprimary
-                          .withValues(alpha: 0.75),
+                          .withValues(alpha: 0.85),
                     ),
                     onPressed: () => Navigator.pop(context, true),
                     child: Text(

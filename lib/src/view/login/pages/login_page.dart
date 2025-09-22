@@ -36,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login(BuildContext context) async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     final userProvider = context.read<UserProvider>();
@@ -45,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       passwordController.text.trim(),
     );
 
+    if (!mounted) return;
     setState(() => _isLoading = false);
 
     if (!success) {
@@ -62,6 +64,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
     } else {
+      if (!mounted) return;
       Navigator.of(
         context,
       ).pushReplacement(MaterialPageRoute(builder: (_) => const AuthWrapper()));

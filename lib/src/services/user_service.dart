@@ -30,10 +30,31 @@ class UserService {
     return user;
   }
 
-  /// Login: Auth + lokalen User laden
   Future<User?> login(String email, String password) async {
-    await auth.signInWithEmail(email, password);
-    return await repository.getByEmail(email);
+    try {
+      final cred = await auth.signInWithEmail(email, password);
+      final fbUser = cred.user;
+
+      if (fbUser == null) return null;
+
+      User? localUser = await repository.getByEmail(email);
+
+      if (localUser == null) {
+        localUser = User(
+          uID: fbUser.uid,
+          username: fbUser.displayName ?? email.split('@')[0],
+          email: fbUser.email ?? email,
+          password: password,
+          profilePath: '',
+          lastLogin: DateTime.now(),
+        );
+        await repository.addUser(localUser);
+      }
+
+      return localUser;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> logout() async => await auth.signOut();

@@ -70,16 +70,14 @@ class TaskProvider with ChangeNotifier {
 
   Future<void> _syncFromFirestore() async {
     if (userID.isEmpty) return;
-
     final db = await DatabaseHelper.instance.database;
 
-    // Tasks
+    // === Tasks ===
     final taskSnapshot = await _firestore
         .collection('users')
         .doc(userID)
         .collection('tasks')
         .get();
-
     for (var doc in taskSnapshot.docs) {
       final task = Task.fromMap(doc.data());
       await db.insert(
@@ -95,13 +93,12 @@ class TaskProvider with ChangeNotifier {
       whereArgs: [userID],
     )).map((e) => Task.fromMap(e)).toList();
 
-    // Tags
+    // === Tags ===
     final tagSnapshot = await _firestore
         .collection('users')
         .doc(userID)
         .collection('tags')
         .get();
-
     for (var doc in tagSnapshot.docs) {
       final tag = Tag.fromMap(doc.data());
       await db.insert(
@@ -116,6 +113,22 @@ class TaskProvider with ChangeNotifier {
       where: 'user_id = ?',
       whereArgs: [userID],
     )).map((e) => Tag.fromMap(e)).toList();
+
+    // === TaskTags (Relationen) ===
+    final relSnapshot = await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('task_tags')
+        .get();
+    for (var doc in relSnapshot.docs) {
+      await db.insert('task_tags', {
+        'task_uid': doc['task_uid'],
+        'tag_uid': doc['tag_uid'],
+        'user_id': doc['user_id'],
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    notifyListeners();
   }
 
   Future<void> _loadTasks() async {
@@ -152,6 +165,7 @@ class TaskProvider with ChangeNotifier {
   void _startFirestoreListener() {
     if (userID.isEmpty) return;
 
+    // === Tasks Listener ===
     _firestore
         .collection('users')
         .doc(userID)
@@ -172,6 +186,50 @@ class TaskProvider with ChangeNotifier {
             where: 'user_id = ?',
             whereArgs: [userID],
           )).map((e) => Task.fromMap(e)).toList();
+          notifyListeners();
+        });
+
+    // === Tags Listener ===
+    _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tags')
+        .snapshots()
+        .listen((snapshot) async {
+          final db = await DatabaseHelper.instance.database;
+          for (var doc in snapshot.docs) {
+            final tag = Tag.fromMap(doc.data());
+            await db.insert(
+              'tags',
+              tag.toMap()..['user_id'] = userID,
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
+          }
+          _tags = (await db.query(
+            'tags',
+            where: 'user_id = ?',
+            whereArgs: [userID],
+          )).map((e) => Tag.fromMap(e)).toList();
+          notifyListeners();
+        });
+
+    // === TaskTags Listener ===
+    _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('task_tags')
+        .snapshots()
+        .listen((snapshot) async {
+          final db = await DatabaseHelper.instance.database;
+          // wir setzen hier nicht _tasks/_tags neu, weil es nur die Relation betrifft,
+          // sondern halten einfach die DB aktuell
+          for (var doc in snapshot.docs) {
+            await db.insert('task_tags', {
+              'task_uid': doc['task_uid'],
+              'tag_uid': doc['tag_uid'],
+              'user_id': doc['user_id'],
+            }, conflictAlgorithm: ConflictAlgorithm.replace);
+          }
           notifyListeners();
         });
   }
@@ -257,6 +315,38 @@ class TaskProvider with ChangeNotifier {
         .delete();
   }
 
+  // -------- Firestore - Tag/Task ------- //
+
+  Future<void> addTaskTagFirestoreRelation(
+    String taskUID,
+    String tagUID,
+  ) async {
+    if (userID.isEmpty) return;
+
+    final docId = '${taskUID}_$tagUID'; // Eindeutig
+    await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('task_tags')
+        .doc(docId)
+        .set({'task_uid': taskUID, 'tag_uid': tagUID, 'user_id': userID});
+  }
+
+  Future<void> removeTaskTagFirestoreRelation(
+    String taskUID,
+    String tagUID,
+  ) async {
+    if (userID.isEmpty) return;
+
+    final docId = '${taskUID}_$tagUID';
+    await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('task_tags')
+        .doc(docId)
+        .delete();
+  }
+
   // ---------- Tasks ---------- //
   Future<void> addTask(Task task) async {
     final db = await DatabaseHelper.instance.database;
@@ -274,6 +364,7 @@ class TaskProvider with ChangeNotifier {
           .collection('tasks')
           .doc(task.uID)
           .set(task.toMap());
+      await addTaskTagFirestoreRelation(task.uID, defaultTagUID);
     } catch (_) {}
   }
 
@@ -299,9 +390,13 @@ class TaskProvider with ChangeNotifier {
 
   Future<void> deleteTask(String taskUID) async {
     final db = await DatabaseHelper.instance.database;
+
+    // Lokale DB löschen
     await db.delete('tasks', where: 'u_id = ?', whereArgs: [taskUID]);
+    await db.delete('task_tags', where: 'task_uid = ?', whereArgs: [taskUID]);
     await _loadTasks();
 
+    // Firestore
     try {
       await _firestore
           .collection('users')
@@ -309,6 +404,18 @@ class TaskProvider with ChangeNotifier {
           .collection('tasks')
           .doc(taskUID)
           .delete();
+
+      // Alle TaskTag-Relationen löschen
+      final relSnapshot = await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('task_tags')
+          .where('task_uid', isEqualTo: taskUID)
+          .get();
+
+      for (var doc in relSnapshot.docs) {
+        await doc.reference.delete();
+      }
     } catch (_) {}
   }
 
@@ -374,6 +481,7 @@ class TaskProvider with ChangeNotifier {
 
     final db = await DatabaseHelper.instance.database;
     await db.delete('tags', where: 'u_id = ?', whereArgs: [tagUID]);
+    await db.delete('task_tags', where: 'tag_uid = ?', whereArgs: [tagUID]);
     await _loadTags();
 
     try {
@@ -383,6 +491,18 @@ class TaskProvider with ChangeNotifier {
           .collection('tags')
           .doc(tagUID)
           .delete();
+
+      // Alle TaskTag-Relationen löschen
+      final relSnapshot = await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('task_tags')
+          .where('tag_uid', isEqualTo: tagUID)
+          .get();
+
+      for (var doc in relSnapshot.docs) {
+        await doc.reference.delete();
+      }
     } catch (_) {}
   }
 
@@ -415,6 +535,18 @@ class TaskProvider with ChangeNotifier {
         'updated_at': DateTime.now().toIso8601String(),
         'user_id': userID,
       }, conflictAlgorithm: ConflictAlgorithm.ignore);
+
+      await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('tags')
+          .doc(tagUID)
+          .set({
+            'u_id': tagUID,
+            'title': 'All Tasks',
+            'updated_at': DateTime.now().toIso8601String(),
+            'user_id': userID,
+          });
     }
 
     // DefaultTagUID setzen
@@ -445,28 +577,27 @@ class TaskProvider with ChangeNotifier {
   }) async {
     final db = await DatabaseHelper.instance.database;
 
-    final existing = await db.query(
-      'task_tags',
-      where: 'task_uid = ? AND tag_uid = ? AND user_id = ?',
-      whereArgs: [taskUID, tagUID, userID],
-    );
+    // Lokale DB
+    final existing = await _loadTagsForTask(taskUID);
 
-    if (existing.isNotEmpty) return;
+    if (existing.isEmpty) {
+      await db.insert('task_tags', {
+        'task_uid': taskUID,
+        'tag_uid': tagUID,
+        'user_id': userID,
+      });
+    }
 
-    await db.insert('task_tags', {
-      'task_uid': taskUID,
-      'tag_uid': tagUID,
-      'user_id': userID,
-    });
-
-    final updatedTags = await _loadTagsForTask(taskUID);
-
-    _tags = _tags.map((tag) {
-      if (updatedTags.any((t) => t.uID == tag.uID)) {
-        return tag;
-      }
-      return tag;
-    }).toList();
+    // Firestore
+    if (userID.isNotEmpty) {
+      final relId = '${taskUID}_$tagUID';
+      await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('task_tags')
+          .doc(relId)
+          .set({'task_uid': taskUID, 'tag_uid': tagUID, 'user_id': userID});
+    }
 
     notifyListeners();
   }
@@ -483,14 +614,16 @@ class TaskProvider with ChangeNotifier {
       whereArgs: [taskUID, tagUID],
     );
 
-    final updatedTags = await _loadTagsForTask(taskUID);
-
-    _tags = _tags.map((tag) {
-      if (updatedTags.any((t) => t.uID == tag.uID)) {
-        return tag;
-      }
-      return tag;
-    }).toList();
+    // Firestore
+    if (userID.isNotEmpty) {
+      final relId = '${taskUID}_$tagUID';
+      await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('task_tags')
+          .doc(relId)
+          .delete();
+    }
 
     notifyListeners();
   }

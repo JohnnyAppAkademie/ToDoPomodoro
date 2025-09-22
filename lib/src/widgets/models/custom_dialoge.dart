@@ -72,53 +72,52 @@ class CustomDialoge extends StatelessWidget {
                     width: 0.5,
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Text(
-                        dialogeLabel,
-                        style: context.textStyles.light.labelLarge,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.hgap2,
+                    horizontal: context.wgap2,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Text(
+                          dialogeLabel,
+                          style: context.textStyles.light.labelMedium,
+                        ),
                       ),
-                    ),
-                    // Dialogtext
-                    Expanded(
-                      child: Padding(
+                      SizedBox(height: context.hgap2),
+
+                      Text(
+                        dialogeText,
+                        style: context.textStyles.light.labelSmall,
+                        overflow: TextOverflow.clip,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: context.hgap5),
+
+                      Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: context.wgap5,
-                          vertical: context.hgap5,
                         ),
-                        child: Text(
-                          dialogeText,
-                          style: context.textStyles.light.labelSmall,
-                          overflow: TextOverflow.clip,
-                          textAlign: TextAlign.center,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildDialogButton(
+                              context,
+                              label: leftButtonText,
+                              onPressed: leftButtonFunc,
+                            ),
+                            _buildDialogButton(
+                              context,
+                              label: rightButtonText,
+                              onPressed: rightButtonFunc,
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    // Button-Row
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: context.wgap2,
-                        vertical: context.hgap2,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildDialogButton(
-                            context,
-                            label: leftButtonText,
-                            onPressed: leftButtonFunc,
-                          ),
-                          _buildDialogButton(
-                            context,
-                            label: rightButtonText,
-                            onPressed: rightButtonFunc,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

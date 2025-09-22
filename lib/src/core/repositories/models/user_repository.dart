@@ -6,7 +6,6 @@ class UserRepository {
 
   UserRepository(this.db);
 
-  /// Neuen User speichern
   Future<void> addUser(User user) async {
     await db.insert(
       'users',
@@ -15,7 +14,6 @@ class UserRepository {
     );
   }
 
-  /// User anhand der ID abrufen
   Future<User?> getById(String id) async {
     final maps = await db.query(
       'users',
@@ -26,7 +24,6 @@ class UserRepository {
     return maps.isNotEmpty ? User.fromJson(maps.first) : null;
   }
 
-  /// User anhand der E-Mail abrufen
   Future<User?> getByEmail(String email) async {
     final maps = await db.query(
       'users',
@@ -37,7 +34,6 @@ class UserRepository {
     return maps.isNotEmpty ? User.fromJson(maps.first) : null;
   }
 
-  /// Sicherer Login mit bcrypt
   Future<User?> login(String identifier, String password) async {
     final isEmail = RegExp(
       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
@@ -71,7 +67,6 @@ class UserRepository {
     return user;
   }
 
-  /// User löschen
   Future<void> deleteUser(String id) async {
     await db.delete('users', where: 'u_id = ?', whereArgs: [id]);
   }
@@ -85,7 +80,6 @@ class UserRepository {
     );
   }
 
-  /// Passwort aktualisieren (mit Hashing)
   Future<void> updatePassword(String userId, String newPassword) async {
     final user = await getById(userId);
     if (user == null) return;

@@ -48,10 +48,20 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> _syncUserFromFirestore(String userId) async {
-    final doc = await _firestore.collection('users').doc(userId).get();
-    if (doc.exists) {
-      _currentUser = User.fromJson(doc.data()!);
-      notifyListeners();
+    try {
+      final doc = await _firestore.collection('users').doc(userId).get();
+      if (doc.exists) {
+        final backupUser = User.fromJson(doc.data()!);
+
+        _currentUser!.username = backupUser.username;
+        _currentUser!.profilePath = backupUser.profilePath;
+
+        notifyListeners();
+      } else {
+        await addUserToFirestore(_currentUser!);
+      }
+    } catch (e) {
+      if (kDebugMode) print('Firestore sync error: $e');
     }
   }
 
@@ -100,20 +110,34 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> login(String email, String password, {Duration? delay}) async {
-    if (delay != null) await Future.delayed(delay);
+  Future<bool> login(String emailOrUsername, String password) async {
+    _isLoading = true;
+    notifyListeners();
+
     try {
-      final user = await service.login(email, password);
-      if (user != null) {
-        _currentUser = user;
-        await SessionManager.saveUserId(user.uID);
+      final user = await service.login(emailOrUsername, password);
+
+      if (user == null) {
+        _isLoading = false;
         notifyListeners();
-        return true;
+        return false;
       }
+
+      _currentUser = user;
+      await SessionManager.saveUserId(user.uID);
+
+      await _syncUserFromFirestore(user.uID);
+      _startUserListener(user.uID);
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
     } catch (e) {
       if (kDebugMode) print('Login error: $e');
+      _isLoading = false;
+      notifyListeners();
+      return false;
     }
-    return false;
   }
 
   Future<void> logout() async {
