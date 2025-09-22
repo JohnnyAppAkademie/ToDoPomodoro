@@ -12,6 +12,9 @@ import 'package:todopomodoro/src/core/database/database.dart';
 import 'package:todopomodoro/src/core/provider/providers.dart'
     show UserProvider;
 
+/* Firestore */
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class TaskProvider with ChangeNotifier {
   /* Run-Time Lists */
   List<Task> _tasks = [];
@@ -31,41 +34,88 @@ class TaskProvider with ChangeNotifier {
   UserProvider? userProvider;
   late String userID;
 
+  /* Firestore */
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   TaskProvider(this.userProvider) {
     if (userProvider?.currentUser != null) {
       userID = userProvider!.currentUser!.uID;
       defaultTagUID = "0000-${userProvider!.currentUser!.uID}-0000";
-      _init();
+      _initWithSync();
     } else {
       userID = '';
       defaultTagUID = '';
     }
   }
 
-  Future<void> _init() async {
+  Future<void> _initWithSync() async {
     _isLoading = true;
     notifyListeners();
 
     final db = await DatabaseHelper.instance.database;
-
     if (!userID.isNotEmpty) return;
 
     await _ensureDefaultTag(db);
 
-    // Tasks und Tags parallel laden
-    final results = await Future.wait([
-      db.query('tasks', where: 'user_id = ?', whereArgs: [userID]),
-      db.query('tags', where: 'user_id = ?', whereArgs: [userID]),
-    ]);
+    await _loadTasks();
+    await _loadTags();
 
-    final tasksData = results[0] as List<Map<String, dynamic>>;
-    final tagsData = results[1] as List<Map<String, dynamic>>;
+    await _syncFromFirestore();
 
-    _tasks = tasksData.map((e) => Task.fromMap(e)).toList();
-    _tags = tagsData.map((e) => Tag.fromMap(e)).toList();
+    _startFirestoreListener();
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> _syncFromFirestore() async {
+    if (userID.isEmpty) return;
+
+    final db = await DatabaseHelper.instance.database;
+
+    // Tasks
+    final taskSnapshot = await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tasks')
+        .get();
+
+    for (var doc in taskSnapshot.docs) {
+      final task = Task.fromMap(doc.data());
+      await db.insert(
+        'tasks',
+        task.toMap()..['user_id'] = userID,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    _tasks = (await db.query(
+      'tasks',
+      where: 'user_id = ?',
+      whereArgs: [userID],
+    )).map((e) => Task.fromMap(e)).toList();
+
+    // Tags
+    final tagSnapshot = await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tags')
+        .get();
+
+    for (var doc in tagSnapshot.docs) {
+      final tag = Tag.fromMap(doc.data());
+      await db.insert(
+        'tags',
+        tag.toMap()..['user_id'] = userID,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    _tags = (await db.query(
+      'tags',
+      where: 'user_id = ?',
+      whereArgs: [userID],
+    )).map((e) => Tag.fromMap(e)).toList();
   }
 
   Future<void> _loadTasks() async {
@@ -94,9 +144,117 @@ class TaskProvider with ChangeNotifier {
 
     await _ensureDefaultTag(db);
 
-    await _init();
+    await _initWithSync();
 
     notifyListeners();
+  }
+
+  void _startFirestoreListener() {
+    if (userID.isEmpty) return;
+
+    _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tasks')
+        .snapshots()
+        .listen((snapshot) async {
+          final db = await DatabaseHelper.instance.database;
+          for (var doc in snapshot.docs) {
+            final task = Task.fromMap(doc.data());
+            await db.insert(
+              'tasks',
+              task.toMap()..['user_id'] = userID,
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
+          }
+          _tasks = (await db.query(
+            'tasks',
+            where: 'user_id = ?',
+            whereArgs: [userID],
+          )).map((e) => Task.fromMap(e)).toList();
+          notifyListeners();
+        });
+  }
+
+  // -------- Firestore - Task -------- //
+
+  Future<void> addTaskToFirestore(Task task) async {
+    if (userID.isEmpty) return;
+
+    await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tasks')
+        .doc(task.uID)
+        .set(task.toMap());
+  }
+
+  Future<void> updateTaskInFirestore(Task task) async {
+    if (userID.isEmpty) return;
+
+    await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tasks')
+        .doc(task.uID)
+        .update(task.toMap());
+  }
+
+  Future<void> deleteTaskFromFirestore(String taskUID) async {
+    if (userID.isEmpty) return;
+
+    await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tasks')
+        .doc(taskUID)
+        .delete();
+  }
+
+  Future<List<Task>> loadTasksFromFirestore() async {
+    if (userID.isEmpty) return [];
+
+    final snapshot = await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tasks')
+        .get();
+
+    return snapshot.docs.map((doc) => Task.fromMap(doc.data())).toList();
+  }
+
+  // ---------- Firestore - Tags ---------- //
+  Future<void> addTagToFirestore(Tag tag) async {
+    if (userID.isEmpty) return;
+
+    await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tags')
+        .doc(tag.uID)
+        .set(tag.toMap());
+  }
+
+  Future<void> updateTagInFirestore(Tag tag) async {
+    if (userID.isEmpty) return;
+
+    await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tags')
+        .doc(tag.uID)
+        .update(tag.toMap());
+  }
+
+  Future<void> deleteTagFromFirestore(String tagUID) async {
+    if (userID.isEmpty) return;
+
+    await _firestore
+        .collection('users')
+        .doc(userID)
+        .collection('tags')
+        .doc(tagUID)
+        .delete();
   }
 
   // ---------- Tasks ---------- //
@@ -105,16 +263,21 @@ class TaskProvider with ChangeNotifier {
     if (userID.isEmpty) return;
 
     await _ensureDefaultTag(db);
-
     await db.insert('tasks', task.toMap()..['user_id'] = userID);
-
     await addTaskToTag(taskUID: task.uID, tagUID: defaultTagUID);
-
     await _loadTasks();
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('tasks')
+          .doc(task.uID)
+          .set(task.toMap());
+    } catch (_) {}
   }
 
   Future<void> updateTask(Task task) async {
-    await Future.delayed(const Duration(milliseconds: 50));
     final db = await DatabaseHelper.instance.database;
     await db.update(
       'tasks',
@@ -123,13 +286,30 @@ class TaskProvider with ChangeNotifier {
       whereArgs: [task.uID, userID],
     );
     await _loadTasks();
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('tasks')
+          .doc(task.uID)
+          .update(task.toMap());
+    } catch (_) {}
   }
 
   Future<void> deleteTask(String taskUID) async {
-    await Future.delayed(const Duration(milliseconds: 50));
     final db = await DatabaseHelper.instance.database;
     await db.delete('tasks', where: 'u_id = ?', whereArgs: [taskUID]);
     await _loadTasks();
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('tasks')
+          .doc(taskUID)
+          .delete();
+    } catch (_) {}
   }
 
   Future<Task> getTask(String taskUID) async {
@@ -155,14 +335,21 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> addTag(Tag tag) async {
-    await Future.delayed(const Duration(milliseconds: 50));
     final db = await DatabaseHelper.instance.database;
     await db.insert('tags', tag.toMap());
     await _loadTags();
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('tags')
+          .doc(tag.uID)
+          .set(tag.toMap());
+    } catch (_) {}
   }
 
   Future<void> updateTag(Tag tag) async {
-    await Future.delayed(const Duration(milliseconds: 50));
     final db = await DatabaseHelper.instance.database;
     await db.update(
       'tags',
@@ -171,17 +358,32 @@ class TaskProvider with ChangeNotifier {
       whereArgs: [tag.uID, userID],
     );
     await _loadTags();
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('tags')
+          .doc(tag.uID)
+          .update(tag.toMap());
+    } catch (_) {}
   }
 
   Future<void> deleteTag(String tagUID) async {
-    await Future.delayed(const Duration(milliseconds: 50));
+    if (tagUID == defaultTagUID) return;
 
     final db = await DatabaseHelper.instance.database;
-
-    if (tagUID == getDefaultTagUID) return;
-
     await db.delete('tags', where: 'u_id = ?', whereArgs: [tagUID]);
     await _loadTags();
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userID)
+          .collection('tags')
+          .doc(tagUID)
+          .delete();
+    } catch (_) {}
   }
 
   Future<Tag> getTag(String tagUID) async {

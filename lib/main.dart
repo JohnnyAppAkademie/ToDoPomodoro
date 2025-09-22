@@ -23,6 +23,7 @@ import 'src/core/database/database.dart';
 /* Firebase - Import */
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+
 import 'firebase_options.dart';
 
 void main() async {
@@ -42,9 +43,6 @@ void main() async {
       appleProvider: AppleProvider.appAttest,
     );
   }
-
-  final token = await FirebaseAppCheck.instance.getToken();
-  print('AppCheck Debug Token: $token');
 
   runApp(
     MultiProvider(
