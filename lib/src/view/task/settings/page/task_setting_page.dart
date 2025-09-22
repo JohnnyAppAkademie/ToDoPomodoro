@@ -55,8 +55,6 @@ class TaskSettingPage extends StatelessWidget {
             body: SingleChildScrollView(
               padding: EdgeInsets.only(bottom: context.hgap5),
               child: Column(
-                spacing: context.hgap2,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TaskNameInput(viewModel: viewModel),
 

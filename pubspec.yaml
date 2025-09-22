@@ -48,8 +48,8 @@ flutter:
     - assets/data/data.json
     - assets/data/history.json
     ################ Page - Bilder ################
-    - assets/pictures/page/Sleepy_and_Raven.png
+    - assets/pictures/page/
     ################ Profil - Bilder ################
-    - assets/pictures/profile/profile_1.png
-    - assets/pictures/profile/profile_2.png
-    - assets/pictures/profile/profile_3.png
+    - assets/pictures/profile/
+    ################ Background - Bilder ################
+    - assets/pictures/background/

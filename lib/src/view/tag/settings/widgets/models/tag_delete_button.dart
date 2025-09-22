@@ -35,9 +35,9 @@ class DeleteTagButton extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.appStyle.buttonBackgroundLight
-                          .withValues(alpha: 0.75),
+                          .withValues(alpha: 0.95),
                     ),
-                    onPressed: () => Navigator.pop(context, true),
+                    onPressed: () => Navigator.pop(context, false),
                     child: Text(
                       "Cancel",
                       style: context.textStyles.highlight.bodySmall,
