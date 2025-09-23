@@ -1,5 +1,6 @@
 /*  General Import  */
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /*  View Model - Import  */
@@ -111,7 +112,7 @@ class _TaskDurationPickerState extends State<TaskDurationPicker> {
             child: Row(
               children: [
                 Text(
-                  "Duration of the Task -",
+                  "${S.of(context).task_setting_duration} -",
                   style: context.textStyles.dark.labelSmall,
                 ),
                 SizedBox(width: context.wgap5),

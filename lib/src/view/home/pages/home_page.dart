@@ -1,6 +1,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
@@ -23,7 +24,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: CustomAppBar(
-        title: "Welcome",
+        title: S.of(context).welcome,
         subtitle: controller.currentUser!.username,
       ),
       body: SingleChildScrollView(
@@ -32,7 +33,7 @@ class HomePage extends StatelessWidget {
             SizedBox(height: context.hgap2),
 
             Text(
-              "Selfcare is important!",
+              S.of(context).home_selfcare_header,
               textAlign: TextAlign.center,
               style: context.textStyles.highlight.labelLarge,
             ),
@@ -53,7 +54,7 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 child: Text(
-                  "So take care during your day, take your breaks and breathe.\n\nFind your own rhythm throughout the day using this app.\n\nFinish your tasks in your own pace, without stress or forgetting them.",
+                  "${S.of(context).home_selfcare_1}\n\n${S.of(context).home_selfcare_2}\n\n${S.of(context).home_selfcare_3}",
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.clip,
                   style: context.textStyles.highlight.bodyMedium?.copyWith(

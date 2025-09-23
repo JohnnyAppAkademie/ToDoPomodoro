@@ -1,5 +1,6 @@
 /* General Import */
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Model View - Import */
@@ -29,7 +30,7 @@ class TaskSaveButton extends StatelessWidget {
         width: context.screenWidth * 0.90,
         height: context.screenHeight * 0.05,
         child: WhiteButton(
-          label: "Save",
+          label: S.of(context).save,
           func: () {
             viewModel.saveTask();
             Navigator.popUntil(context, (route) => route.isFirst);

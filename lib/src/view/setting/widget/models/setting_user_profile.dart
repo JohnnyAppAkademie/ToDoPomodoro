@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
@@ -147,7 +148,7 @@ class _SettingUserProfileState extends State<SettingUserProfile> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    "Edit your profile",
+                                    S.of(context).setting_edit_profile,
                                     style: context.textStyles.light.bodyLarge,
                                     textAlign: TextAlign.center,
                                   ),
@@ -164,7 +165,7 @@ class _SettingUserProfileState extends State<SettingUserProfile> {
                                   childWidget: CustomTextField(
                                     textController: usernameController,
                                     onChanged: (String value) {},
-                                    topic: "Enter your new Username",
+                                    topic: S.of(context).setting_enter_username,
                                     isPassword: false,
                                   ),
                                 ),
@@ -220,7 +221,7 @@ class _SettingUserProfileState extends State<SettingUserProfile> {
                                     );
                                     Restart.restartApp();
                                   },
-                                  label: "Save",
+                                  label: S.of(context).save,
                                   icon: Icons.save,
                                 ),
                               ),

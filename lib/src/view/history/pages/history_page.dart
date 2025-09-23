@@ -3,6 +3,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider Import */
@@ -38,10 +39,10 @@ class _HistoryPageState extends State<HistoryPage> {
 
     if (historyList.isEmpty) {
       return Scaffold(
-        appBar: CustomAppBar(title: "History"),
+        appBar: CustomAppBar(title: S.of(context).history),
         body: Center(
           child: Text(
-            "Keine History gefunden",
+            S.of(context).no_history,
             style: context.textStyles.dark.bodyLarge,
           ),
         ),
@@ -56,7 +57,7 @@ class _HistoryPageState extends State<HistoryPage> {
     final groupedHistory = _groupByDate(sortedHistory);
 
     return Scaffold(
-      appBar: CustomAppBar(title: "History"),
+      appBar: CustomAppBar(title: S.of(context).history),
       body: Padding(
         padding: EdgeInsets.symmetric(
           vertical: context.hgap2,
@@ -100,7 +101,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         final startTime = _formatTime(entry.startedAt);
                         final endTime = entry.finished && entry.endedAt != null
                             ? _formatTime(entry.endedAt!)
-                            : "Nicht beendet";
+                            : S.of(context).history_not_finished;
 
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 4),
@@ -122,7 +123,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               style: context.textStyles.light.labelMedium,
                             ),
                             subtitle: Text(
-                              "Start: $startTime\nEnde: $endTime",
+                              "${S.of(context).start}: $startTime\n${S.of(context).history_end}: $endTime",
                               style: context.textStyles.light.labelSmall,
                             ),
                           ),
@@ -161,11 +162,11 @@ class _HistoryPageState extends State<HistoryPage> {
     if (date.year == today.year &&
         date.month == today.month &&
         date.day == today.day) {
-      return "Heute";
+      return S.of(context).history_today;
     } else if (date.year == yesterday.year &&
         date.month == yesterday.month &&
         date.day == yesterday.day) {
-      return "Gestern";
+      return S.of(context).history_yesterday;
     } else {
       return "${_twoDigits(date.day)}.${_twoDigits(date.month)}.${date.year}";
     }

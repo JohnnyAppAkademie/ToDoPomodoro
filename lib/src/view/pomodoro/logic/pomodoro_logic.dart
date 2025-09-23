@@ -1,12 +1,32 @@
 /* General Import */
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 
 import 'package:todopomodoro/src/core/data/data.dart'
     show Task, TimeUnitMode, HistoryEntry;
 import 'package:todopomodoro/src/core/provider/providers.dart';
 
 enum PomodoroPhase { idle, pomodoro, shortBreak, longBreak, paused, finished }
+
+extension PomodoroPhaseExtension on PomodoroPhase {
+  String displayName(BuildContext context) {
+    switch (this) {
+      case PomodoroPhase.idle:
+        return S.of(context).phase_idle.toString();
+      case PomodoroPhase.pomodoro:
+        return S.of(context).phase_pomodoro.toString();
+      case PomodoroPhase.shortBreak:
+        return S.of(context).phase_short_break.toString();
+      case PomodoroPhase.longBreak:
+        return S.of(context).phase_long_break.toString();
+      case PomodoroPhase.paused:
+        return S.of(context).phase_paused.toString();
+      case PomodoroPhase.finished:
+        return S.of(context).phase_finished.toString();
+    }
+  }
+}
 
 class PomodoroViewModel extends ChangeNotifier {
   final Task task;

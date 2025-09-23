@@ -3,6 +3,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
@@ -53,12 +54,12 @@ class _LoginPageState extends State<LoginPage> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Fehler'),
-          content: const Text('Login fehlgeschlagen!'),
+          title: Text(S.of(context).error),
+          content: Text(S.of(context).error_login),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+              child: Text(S.of(context).ok),
             ),
           ],
         ),
@@ -75,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: Text(S.of(context).login),
         titleTextStyle: context.textStyles.light.labelLarge,
         centerTitle: true,
       ),
@@ -86,13 +87,16 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               SizedBox(height: context.hgap5),
 
-              Text("Welcome", style: context.textStyles.dark.titleSmall),
+              Text(
+                S.of(context).welcome,
+                style: context.textStyles.dark.titleSmall,
+              ),
               SizedBox(height: context.hgap10),
 
               CustomContainer(
                 childWidget: CustomTextField(
                   textController: userController,
-                  topic: "Please enter your Email or Username",
+                  topic: S.of(context).login_email,
                   isPassword: false,
                   onChanged: (value) => {},
                 ),
@@ -102,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
               CustomContainer(
                 childWidget: CustomTextField(
                   textController: passwordController,
-                  topic: 'Please enter your Password',
+                  topic: S.of(context).login_password,
                   isPassword: true,
                   onChanged: (value) => {},
                 ),
@@ -115,13 +119,13 @@ class _LoginPageState extends State<LoginPage> {
                     )
                   : PinkButton(
                       func: () => _login(context),
-                      label: 'Login',
+                      label: S.of(context).login,
                       icon: Icons.login,
                     ),
 
               SizedBox(height: context.hgap5),
               Text(
-                "Did you not made an account yet?",
+                S.of(context).login_no_account,
                 style: context.textStyles.dark.labelSmall,
               ),
               SizedBox(height: context.hgap2),
@@ -129,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                 func: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => RegistrationPage()),
                 ),
-                label: "Register",
+                label: S.of(context).login_register,
                 icon: Icons.add_box,
               ),
             ],

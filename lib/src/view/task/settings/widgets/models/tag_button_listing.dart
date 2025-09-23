@@ -1,5 +1,6 @@
 /* General Import */
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* View Model - Import */
@@ -34,7 +35,7 @@ class TagButtonListing extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(left: context.wgap5, bottom: context.hgap2),
           child: Text(
-            "Associated Tags",
+            S.of(context).task_setting_tag,
             style: context.textStyles.dark.labelSmall,
           ),
         ),

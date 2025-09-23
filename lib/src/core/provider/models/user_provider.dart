@@ -1,19 +1,37 @@
+/* General Import */
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:todopomodoro/src/core/data/data.dart' show User;
 import 'package:todopomodoro/src/core/database/database.dart';
 import 'package:todopomodoro/src/core/repositories/repositories.dart'
     show UserRepository, FirebaseAuthRepository;
 
+/* Service - Import */
 import 'package:todopomodoro/src/services/user_service.dart';
 import 'package:todopomodoro/src/services/session_service.dart';
 
+/* Firestore - Import */
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserProvider with ChangeNotifier {
   late final UserService service;
   User? _currentUser;
+  Locale? _currentLocale;
+  Locale? get currentLocale => _currentLocale;
   bool _isLoading = false;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void safeNotify() {
+    if (!_disposed) notifyListeners();
+  }
 
   UserProvider() {
     _initWithSync();
@@ -28,7 +46,11 @@ class UserProvider with ChangeNotifier {
 
     await loadCurrentUser();
 
-    // Firestore initial synchronisieren
+    final savedLocaleCode = await getUserLocale();
+    if (savedLocaleCode != null) {
+      _currentLocale = Locale(savedLocaleCode);
+    }
+
     if (_currentUser != null) {
       await _syncUserFromFirestore(_currentUser!.uID);
       _startUserListener(_currentUser!.uID);
@@ -180,5 +202,29 @@ class UserProvider with ChangeNotifier {
     while (_isLoading) {
       await Future.delayed(const Duration(milliseconds: 50));
     }
+  }
+
+  Future<void> setUserLocale(String localeCode) async {
+    if (_currentUser == null) return;
+
+    await SessionManager.saveLocale(localeCode);
+
+    await _firestore.collection('users').doc(_currentUser!.uID).set({
+      'locale': localeCode,
+    }, SetOptions(merge: true));
+
+    _currentLocale = Locale(localeCode);
+
+    notifyListeners();
+  }
+
+  Future<String?> getUserLocale() async {
+    if (_currentUser == null) return SessionManager.getLocale();
+    final doc = await _firestore
+        .collection('users')
+        .doc(_currentUser!.uID)
+        .get();
+    return (doc.data()?['locale'] as String?) ??
+        await SessionManager.getLocale();
   }
 }

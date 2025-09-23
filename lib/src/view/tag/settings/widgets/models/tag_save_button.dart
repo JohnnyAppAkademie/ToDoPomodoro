@@ -2,6 +2,7 @@
 
 /* General Import */
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Model View - Import */
@@ -25,7 +26,7 @@ class SaveTagButton extends StatelessWidget {
           await viewModel.saveTag();
           Navigator.popUntil(context, (route) => route.isFirst);
         },
-        label: "Save",
+        label: S.of(context).save,
       ),
     );
   }

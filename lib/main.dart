@@ -1,7 +1,9 @@
 /* General Import */
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 
 /* Theme Import */
 import 'package:todopomodoro/src/core/theme/themes.dart';
@@ -12,6 +14,7 @@ import 'package:todopomodoro/src/core/provider/providers.dart'
 
 /* Service Import */
 import 'package:todopomodoro/src/services/history_service.dart';
+import 'package:todopomodoro/src/services/session_service.dart';
 
 /* Start Page - Import */
 import 'package:todopomodoro/src/view/view.dart'
@@ -66,7 +69,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // UserProvider überwachen
+    final userProvider = context.watch<UserProvider>();
+
+    // Locale bestimmen
+    Locale appLocale;
+    if (userProvider.currentUser != null) {
+      // Locale aus Firestore / UserProvider oder SharedPreferences
+      final savedLocale = SessionManager.currentLocale ?? 'en';
+      appLocale = Locale(savedLocale);
+    } else {
+      // Standard
+      appLocale = const Locale('en');
+    }
+
     return MaterialApp(
+      locale: appLocale,
+      supportedLocales: S.delegate.supportedLocales,
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: standardTheme(AppStyle.standard()),
       debugShowCheckedModeBanner: false,
       title: 'ToDo & Pomodoro',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 import 'package:todopomodoro/src/view/tag/settings/logic/tag_setting_view_model.dart';
 
@@ -19,7 +20,10 @@ class TaskListingWidget extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.only(left: context.wgap5),
-          child: Text("Tasks", style: context.textStyles.dark.labelSmall),
+          child: Text(
+            S.of(context).tag_setting_add_task,
+            style: context.textStyles.dark.labelSmall,
+          ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(

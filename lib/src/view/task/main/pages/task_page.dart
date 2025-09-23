@@ -1,6 +1,7 @@
 /*  General Import  */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /*  Provider - Import */
@@ -48,7 +49,7 @@ class TaskPage extends StatelessWidget {
           if (tasks.isEmpty) {
             return Center(
               child: Text(
-                "Keine Tasks",
+                S.of(context).no_task,
                 style: context.textStyles.dark.titleSmall,
               ),
             );

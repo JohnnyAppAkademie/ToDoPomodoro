@@ -1,5 +1,6 @@
 /* General Import */
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /*  Data - Import */
@@ -123,7 +124,7 @@ class TaskCard extends StatelessWidget {
                   Expanded(
                     child: CardButton(
                       iconData: Icons.play_arrow_outlined,
-                      label: "Start",
+                      label: S.of(context).start,
                       callBack: () => {
                         Navigator.push(
                           context,
@@ -138,7 +139,7 @@ class TaskCard extends StatelessWidget {
                   Expanded(
                     child: CardButton(
                       iconData: Icons.settings_outlined,
-                      label: "Settings",
+                      label: S.of(context).settings,
                       callBack: () => Navigator.push(
                         context,
                         MaterialPageRoute(

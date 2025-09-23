@@ -3,6 +3,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
@@ -59,18 +60,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(success ? 'Erfolg' : 'Fehler'),
+        title: Text(success ? S.of(context).success : S.of(context).error),
         content: Text(
           success
-              ? 'Registrierung erfolgreich!'
-              : 'Registrierung fehlgeschlagen! E-Mail evtl. schon vorhanden.',
+              ? S.of(context).registration_success
+              : S.of(context).registration_failed,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (context) => const LoginPage())),
-            child: const Text('OK'),
+            child: Text(S.of(context).ok),
           ),
         ],
       ),
@@ -103,7 +104,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 childWidget: CustomTextField(
                   textController: usernameController,
                   onChanged: (String value) {},
-                  topic: 'Enter a Username',
+                  topic: S.of(context).registration_username,
                   isPassword: false,
                 ),
               ),
@@ -114,7 +115,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 childWidget: CustomTextField(
                   textController: emailController,
                   onChanged: (String value) {},
-                  topic: 'Enter a Email',
+                  topic: S.of(context).registration_email,
                   isPassword: false,
                 ),
               ),
@@ -125,7 +126,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 childWidget: CustomTextField(
                   textController: passwordController,
                   onChanged: (String value) {},
-                  topic: 'Enter a Password',
+                  topic: S.of(context).registration_password,
                   isPassword: true,
                 ),
               ),
@@ -213,7 +214,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     )
                   : PinkButton(
                       func: () => _register(context),
-                      label: 'Registrieren',
+                      label: S.of(context).registration_register,
                     ),
             ],
           ),

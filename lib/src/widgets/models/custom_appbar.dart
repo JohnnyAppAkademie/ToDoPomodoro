@@ -1,6 +1,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
@@ -65,7 +66,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: ListTile(
                   leading: Icon(Icons.settings, color: Colors.black),
                   title: Text(
-                    "Settings",
+                    S.of(context).settings,
                     style: context.textStyles.highlight.labelSmall,
                   ),
                 ),
@@ -75,7 +76,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: ListTile(
                   leading: Icon(Icons.logout, color: Colors.black),
                   title: Text(
-                    "Logout",
+                    S.of(context).logout,
                     style: context.textStyles.highlight.labelSmall,
                   ),
                 ),

@@ -1,5 +1,6 @@
 /* General Import */
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'dart:ui';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
@@ -63,7 +64,7 @@ class _TaskSelectionDialogState extends State<TaskSelectionDialog> {
               child: Column(
                 children: [
                   Text(
-                    "Select Tasks",
+                    S.of(context).tag_setting_selection,
                     style: context.textStyles.dark.labelMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -111,7 +112,7 @@ class _TaskSelectionDialogState extends State<TaskSelectionDialog> {
                         Navigator.of(context).pop();
                       },
                       child: Text(
-                        "Fertig",
+                        S.of(context).finish,
                         style: context.textStyles.light.bodyMedium,
                       ),
                     ),

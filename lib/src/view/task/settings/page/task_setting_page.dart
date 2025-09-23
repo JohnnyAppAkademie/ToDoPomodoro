@@ -3,6 +3,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
@@ -49,7 +50,9 @@ class TaskSettingPage extends StatelessWidget {
           return Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: CustomAppBar(
-              title: task != null ? "Task - Adjustment" : "Task - Creation",
+              title: task != null
+                  ? S.of(context).task_setting_adjust
+                  : S.of(context).task_setting_create,
               subtitle: task?.title,
             ),
             body: SingleChildScrollView(
@@ -57,7 +60,7 @@ class TaskSettingPage extends StatelessWidget {
               child: Column(
                 children: [
                   TaskNameInput(viewModel: viewModel),
-
+                  SizedBox(height: context.hgap2),
                   TagButtonListing(viewModel: viewModel),
                   TaskDurationPicker(viewModel: viewModel),
                   TaskSaveButton(viewModel: viewModel),

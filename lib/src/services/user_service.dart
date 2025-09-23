@@ -67,10 +67,9 @@ class UserService {
   Future<User?> getById(String userId) async =>
       await repository.getById(userId);
 
-  Future<void> updateProfilePicture(
-    String userId,
-    String newProfilePath,
-  ) async => await repository.updateProfilePath(userId, newProfilePath);
+  Future<void> updateProfilePicture(String userId, String newPath) async {
+    await repository.updateProfilePath(userId, newPath);
+  }
 
   Future<void> updateUsername(String userId, String newUsername) async =>
       await repository.updateName(userId, newUsername);

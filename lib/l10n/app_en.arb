@@ -1,0 +1,83 @@
+{
+  "@@locale": "en",
+  "appTitle": "My TodoPomodoro App",
+  
+  "german":    "German",
+  "english":   "English",
+  "user_load": "Currently loading the user",
+  "task_load": "Currently loading the tasks",
+
+  "enter_email":      "Please enter your Email",
+  "enter_password":   "Please enter your Password",
+  "info_no_account":  "Did you not make an account yet?",
+  "register":         "Register",
+  
+  "registration":           "Registration",
+  "registration_success":   "Registration successful",
+  "registration_failed":    "Registration failed",
+  "registration_username":  "Enter a username",
+  "registration_email":     "Enter a Email",
+  "registration_pass":      "Enter a Password",
+
+
+
+  "welcome":  "Welcome",
+  "start":    "Start",
+  "save":     "Save",
+  "settings": "Settings",
+  "finish":   "Finish",
+  "login":    "Login",
+  "logout":   "Logout",
+  "error":    "Error",
+  "success":  "Success",
+  "ok":       "ok",
+
+  "selfcare": "Selfcare is important",
+  "s_1":      "So take care during your day, take your breaky and breathe.",
+  "s_2":      "Find your own Rhythm throughout the day using this app.",
+  "s_3":      "Finish your tasks in your own pace, without stress or forgetting them.",
+
+  "tag":          "Tag",
+  "no_tags":      "No Tags",
+  "task_entry":   "Entry",
+  "task_entries": "Entries",
+
+  "tag_setting_create": "Tag-Creation",
+  "tag_setting_adjust": "Tag-Adjustment",
+  "add_task":           "Add Tasks",
+  "selection_task":     "Select Tasks",
+
+  "task":    "Task",
+  "no_task": "No Tasks",
+
+  "task_setting_create":  "Task-Creation",
+  "task_setting_adjust":  "Task-Adjustment",
+  "enter_task":           "Enter a Taskname",
+  "associated_tag":       "Associated Tags",
+  "enter_duration_task":  "Duration of the Task",
+  "delete_task":          "Delete Task",
+  "remove_task":          "Remove Task",
+
+  "history":      "History",
+  "today":        "Today",
+  "yesterday":    "Yesterday",
+  "end":          "End",
+  "not_finished": "Not finished",
+  
+  "total_time":   "Total time:",
+  "pause":        "Pause",
+  "resume":       "Resume",
+
+  "idle":         "Idle",
+  "pomodoro":     "Pomodoro",
+  "short_break":  "Short Break",
+  "long_break":   "Long Break",
+  "paused":       "Paused",
+  "finished":     "Finished",
+
+  "reset_app_data": "Reset data",
+  "edit_profile":   "Edit your profile",
+  "enter_username": "Enter your new Username",
+
+  "error_login": "Login failed"
+}

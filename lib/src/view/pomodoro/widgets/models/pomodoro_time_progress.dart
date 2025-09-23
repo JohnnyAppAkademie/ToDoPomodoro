@@ -1,6 +1,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* View Model - Import */
@@ -38,7 +39,7 @@ class PomodoroTimeProgress extends StatelessWidget {
         ),
         const SizedBox(height: 15),
         Text(
-          "Gesamtzeit verbleibend: ${_formatDuration(totalRemaining)}",
+          "${S.of(context).pomodoro_total_time}: ${_formatDuration(totalRemaining)}",
           style: context.textStyles.dark.labelMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),

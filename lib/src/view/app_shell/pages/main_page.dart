@@ -1,6 +1,7 @@
 /*  Basic - Import  */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
@@ -88,9 +89,9 @@ class _MainPageState extends State<MainPage> {
           showDialog(
             context: context,
             builder: (context) => CustomDialoge(
-              dialogeLabel: "Adding Option",
-              dialogeText: 'What do you want to add?',
-              leftButtonText: 'Tag',
+              dialogeLabel: S.of(context).add_header,
+              dialogeText: S.of(context).add_text,
+              leftButtonText: S.of(context).tag,
               leftButtonFunc: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -99,7 +100,7 @@ class _MainPageState extends State<MainPage> {
                 );
                 setState(() => _selectedPage = 1);
               },
-              rightButtonText: 'Task',
+              rightButtonText: S.of(context).task,
               rightButtonFunc: () {
                 Navigator.pop(context);
                 Navigator.push(

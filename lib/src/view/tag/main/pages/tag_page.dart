@@ -1,6 +1,7 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 
 /*  Provider - Import */
 import 'package:todopomodoro/src/core/provider/providers.dart'
@@ -27,14 +28,14 @@ class TagPage extends StatelessWidget {
         .toList();
 
     return Scaffold(
-      appBar: CustomAppBar(title: "Tags"),
+      appBar: CustomAppBar(title: S.of(context).tag),
       body: Column(
         children: [
           Expanded(
             child: filteredTags.isEmpty
                 ? Center(
                     child: Text(
-                      "Keine Tags",
+                      S.of(context).no_tags,
                       style: context.textStyles.dark.titleSmall,
                     ),
                   )

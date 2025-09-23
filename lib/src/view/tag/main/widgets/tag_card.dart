@@ -1,6 +1,7 @@
 /*  Basic Import  */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
@@ -77,7 +78,9 @@ class TagCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              "${tasks.length.toString()} Entries",
+                              tasks.length < 2
+                                  ? "${tasks.length.toString()} ${S.of(context).task_entry}"
+                                  : "${tasks.length.toString()} ${S.of(context).task_entries}",
                               style: context.textStyles.light.labelSmall,
                             ),
                           ],
@@ -100,19 +103,19 @@ class TagCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: cardButton(
-                            context,
-                            Icons.list,
-                            "Open",
-                            () => taskButtonPress(context, tag),
+                            context: context,
+                            iconData: Icons.list,
+                            label: S.of(context).open,
+                            callBack: () => taskButtonPress(context, tag),
                           ),
                         ),
                         SizedBox(width: context.wgap2),
                         Expanded(
                           child: cardButton(
-                            context,
-                            Icons.settings_outlined,
-                            "Settings",
-                            () => settingButtonPress(context, tag),
+                            context: context,
+                            iconData: Icons.settings_outlined,
+                            label: S.of(context).settings,
+                            callBack: () => settingButtonPress(context, tag),
                           ),
                         ),
                       ],
@@ -135,12 +138,12 @@ class TagCard extends StatelessWidget {
   ///* __[IconData : iconData]__ - Das Icon für den Button
   ///* __[Text : label]__ - Der Text für den Button
   ///* __[VoidCallBack]__ - Die Funktion des Button
-  Widget cardButton(
-    BuildContext context,
-    IconData iconData,
-    String label,
-    VoidCallback callBack,
-  ) {
+  Widget cardButton({
+    required BuildContext context,
+    required IconData iconData,
+    required String label,
+    required VoidCallback callBack,
+  }) {
     return ElevatedButton(
       style: context.buttonStyles.card,
       onPressed: callBack,

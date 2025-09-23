@@ -1,5 +1,6 @@
 /*  General Import  */
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /*  View Model - Import */
@@ -48,11 +49,11 @@ class _TaskNameInputState extends State<TaskNameInput> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Task", style: context.textStyles.dark.labelSmall),
+          Text(S.of(context).task, style: context.textStyles.dark.labelSmall),
           SizedBox(height: context.hgap2),
           CustomContainer(
             childWidget: CustomTextField(
-              topic: "Enter a Taskname",
+              topic: S.of(context).task_setting_task,
               textController: taskNameController,
               onChanged: widget.viewModel.updateTitle,
             ),

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider - Import */
@@ -22,11 +23,14 @@ class SettingLogoutButton extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.wgap5),
       child: PinkButton(
-        label: 'Logout',
+        label: S.of(context).logout,
         icon: Icons.logout_outlined,
         func: () async {
           await context.read<UserProvider>().logout();
-          showAppSnackBar(context: context, message: "Logged out");
+          showAppSnackBar(
+            context: context,
+            message: S.of(context).setting_logged_out,
+          );
           Restart.restartApp();
         },
       ),

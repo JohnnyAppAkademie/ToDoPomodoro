@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 import 'package:todopomodoro/src/widgets/models/custom_button.dart';
 import 'package:todopomodoro/src/view/tag/settings/logic/tag_setting_view_model.dart';
@@ -18,12 +19,12 @@ class DeleteTagButton extends StatelessWidget {
             alpha: 0.85,
           ),
           title: Text(
-            "Delete Tag",
+            S.of(context).delete_tag_header,
             style: context.textStyles.light.labelLarge,
             textAlign: TextAlign.center,
           ),
           content: Text(
-            "Are you sure, you want to delete this Tag?\n\nThis action can not be undone.",
+            "${S.of(context).delete_tag_text_1}\n\n${S.of(context).delete_tag_text_2}",
             style: context.textStyles.light.bodyMedium,
           ),
           actions: [
@@ -39,7 +40,7 @@ class DeleteTagButton extends StatelessWidget {
                     ),
                     onPressed: () => Navigator.pop(context, false),
                     child: Text(
-                      "Cancel",
+                      S.of(context).cancel,
                       style: context.textStyles.highlight.bodySmall,
                     ),
                   ),
@@ -50,7 +51,7 @@ class DeleteTagButton extends StatelessWidget {
                     ),
                     onPressed: () => Navigator.pop(context, true),
                     child: Text(
-                      "Delete Tag",
+                      S.of(context).delete_tag_confirm,
                       style: context.textStyles.light.bodySmall,
                     ),
                   ),
@@ -79,7 +80,7 @@ class DeleteTagButton extends StatelessWidget {
         child: PinkButton(
           func: () => _showDeleteConfirmationDialog(context),
           icon: Icons.delete_outline,
-          label: "Delete Tag",
+          label: S.of(context).delete_tag_header,
         ),
       ),
     );

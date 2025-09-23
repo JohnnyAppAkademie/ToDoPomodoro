@@ -3,6 +3,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Data - Import */
@@ -61,7 +62,9 @@ class TagSettingPage extends StatelessWidget {
 
           return Scaffold(
             appBar: CustomAppBar(
-              title: tag != null ? "Tag - Adjustment" : "Tag - Creation",
+              title: tag != null
+                  ? S.of(context).tag_setting_adjust
+                  : S.of(context).tag_setting_create,
               subtitle: tag?.title,
             ),
             body: SingleChildScrollView(

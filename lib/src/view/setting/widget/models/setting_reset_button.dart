@@ -3,6 +3,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* Provider Import */
@@ -28,11 +29,14 @@ class SettingResetButton extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.wgap5),
       child: PinkButton(
-        label: 'App-Daten zurücksetzen',
+        label: S.of(context).setting_reset_app_data,
         icon: Icons.clear_all_outlined,
         func: () async {
           await taskController.fullReset();
-          showAppSnackBar(context: context, message: "Data reset");
+          showAppSnackBar(
+            context: context,
+            message: S.of(context).setting_data_reset,
+          );
           Restart.restartApp();
         },
       ),

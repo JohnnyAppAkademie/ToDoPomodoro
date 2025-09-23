@@ -2,6 +2,7 @@
 
 /* General Import */
 import 'package:flutter/material.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* View Model - Import*/
@@ -28,14 +29,16 @@ class TaskDeleteButton extends StatelessWidget {
             alpha: 0.85,
           ),
           title: Text(
-            "Delete Task",
+            viewModel.tag!.uID == viewModel.taskProvider.defaultTagUID
+                ? S.of(context).delete_task_header
+                : S.of(context).remove_task_header,
             style: context.textStyles.light.labelLarge,
             textAlign: TextAlign.center,
           ),
           content: Text(
             viewModel.tag!.uID == viewModel.taskProvider.defaultTagUID
-                ? "Are you sure, you want to delete this Task?\n\nThis action can not be undone."
-                : "Are you sure, you want to remove this Task?",
+                ? "${S.of(context).delete_task_text_1}\n\n${S.of(context).delete_task_text_2}"
+                : S.of(context).remove_task_text_1,
             style: context.textStyles.light.bodyMedium,
           ),
           actions: [
@@ -51,7 +54,7 @@ class TaskDeleteButton extends StatelessWidget {
                     ),
                     onPressed: () => Navigator.pop(context, false),
                     child: Text(
-                      "Cancel",
+                      S.of(context).cancel,
                       style: context.textStyles.highlight.bodySmall,
                     ),
                   ),
@@ -63,8 +66,8 @@ class TaskDeleteButton extends StatelessWidget {
                     onPressed: () => Navigator.pop(context, true),
                     child: Text(
                       viewModel.tag!.uID == viewModel.taskProvider.defaultTagUID
-                          ? "Delete Task"
-                          : "Remove Task",
+                          ? S.of(context).delete_task_confirm
+                          : S.of(context).remove_task_confirm,
                       style: context.textStyles.light.bodySmall,
                     ),
                   ),
@@ -94,8 +97,8 @@ class TaskDeleteButton extends StatelessWidget {
           func: () => _showDeleteConfirmationDialog(context),
           icon: Icons.delete_outline,
           label: viewModel.tag!.uID == viewModel.taskProvider.defaultTagUID
-              ? "Delete Task"
-              : "Remove Task",
+              ? S.of(context).delete_task
+              : S.of(context).remove_task,
         ),
       ),
     );

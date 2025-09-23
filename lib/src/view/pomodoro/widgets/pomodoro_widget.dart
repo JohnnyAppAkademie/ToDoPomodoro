@@ -1,6 +1,7 @@
 /* General Import */
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todopomodoro/generated/l10n.dart';
 import 'package:todopomodoro/src/core/util/context_extension.dart';
 
 /* View Model - Import */
@@ -47,7 +48,7 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
 
         // Phase-Anzeige
         Text(
-          "Phase: ${vm.phase.name}",
+          "${S.of(context).pomodoro_phase}: ${vm.phase.displayName(context)}",
           style: context.textStyles.dark.titleSmall,
         ),
         SizedBox(height: context.hgap5),
@@ -67,13 +68,15 @@ class _PomodoroWidgetState extends State<PomodoroWidget> {
             children: [
               PomodoroInteractionButton(
                 funct: vm.isRunning ? vm.cancelPomodoro : vm.startPomodoro,
-                txt: vm.isRunning ? "Cancel" : "Start",
+                txt: vm.isRunning ? S.of(context).cancel : S.of(context).start,
                 icon: vm.isRunning ? Icons.clear : Icons.schedule,
               ),
               SizedBox(height: context.hgap2),
               PomodoroInteractionButton(
                 funct: vm.isPaused ? vm.resumePomodoro : vm.pausePomodoro,
-                txt: vm.isPaused ? "Resume" : "Pause",
+                txt: vm.isPaused
+                    ? S.of(context).pomodoro_resume
+                    : S.of(context).pomodoro_pause,
                 icon: vm.isPaused ? Icons.play_arrow : Icons.pause,
               ),
             ],
