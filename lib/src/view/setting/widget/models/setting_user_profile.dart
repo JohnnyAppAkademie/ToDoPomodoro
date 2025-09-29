@@ -87,7 +87,6 @@ class _SettingUserProfileState extends State<SettingUserProfile> {
     final List<String> profilePictures = [
       "assets/pictures/profile/profile_1.png",
       "assets/pictures/profile/profile_2.png",
-      "assets/pictures/profile/profile_3.png",
     ];
 
     int currentPage = 0;
@@ -174,8 +173,8 @@ class _SettingUserProfileState extends State<SettingUserProfile> {
 
                               // Bildauswahl
                               SizedBox(
-                                height: context.screenHeight * 0.33,
-                                width: context.screenWidth * 0.40,
+                                height: context.screenHeight * 0.3,
+                                width: context.screenWidth * 0.4,
                                 child: PageView.builder(
                                   controller: pageController,
                                   itemCount: profilePictures.length,
@@ -185,10 +184,15 @@ class _SettingUserProfileState extends State<SettingUserProfile> {
                                   itemBuilder: (context, index) {
                                     return CircleAvatar(
                                       key: ValueKey<int>(index),
-                                      backgroundImage: AssetImage(
-                                        profilePictures[index],
+                                      radius: context.screenWidth * 0.05,
+                                      child: ClipOval(
+                                        child: Image.asset(
+                                          profilePictures[index],
+                                          fit: BoxFit.cover,
+                                          width: context.screenWidth * 0.25,
+                                          height: context.screenWidth * 0.25,
+                                        ),
                                       ),
-                                      radius: context.screenWidth * 0.22,
                                     );
                                   },
                                 ),

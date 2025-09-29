@@ -26,7 +26,6 @@ import 'src/core/database/database.dart';
 /* Firebase - Import */
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-
 import 'firebase_options.dart';
 
 void main() async {
@@ -69,17 +68,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // UserProvider überwachen
     final userProvider = context.watch<UserProvider>();
 
-    // Locale bestimmen
     Locale appLocale;
     if (userProvider.currentUser != null) {
-      // Locale aus Firestore / UserProvider oder SharedPreferences
       final savedLocale = SessionManager.currentLocale ?? 'en';
       appLocale = Locale(savedLocale);
     } else {
-      // Standard
       appLocale = const Locale('en');
     }
 

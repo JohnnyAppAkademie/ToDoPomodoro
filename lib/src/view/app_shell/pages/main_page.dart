@@ -65,7 +65,7 @@ class _MainPageState extends State<MainPage> {
     final navTheme = Theme.of(context).navigationBarTheme;
 
     return Scaffold(
-      body: pages[_selectedPage],
+      body: Stack(children: [pages[_selectedPage]]),
       bottomNavigationBar: BottomAppBar(
         color:
             navTheme.backgroundColor ?? Theme.of(context).colorScheme.surface,
@@ -77,13 +77,13 @@ class _MainPageState extends State<MainPage> {
             destinationButton(iconData: Icons.home, pagePosition: 0),
             destinationButton(iconData: Icons.folder, pagePosition: 1),
             const SizedBox(width: 48),
-            /* Platz für den Add-Button */
             destinationButton(iconData: Icons.list, pagePosition: 2),
             destinationButton(iconData: Icons.history, pagePosition: 3),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: context.appStyle.buttonBackgroundprimary,
         shape: const CircleBorder(),
         onPressed: () {
           showDialog(
@@ -112,7 +112,7 @@ class _MainPageState extends State<MainPage> {
             ),
           );
         },
-        child: const Icon(Icons.add),
+        child: Icon(Icons.add, color: context.appStyle.writingLight),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

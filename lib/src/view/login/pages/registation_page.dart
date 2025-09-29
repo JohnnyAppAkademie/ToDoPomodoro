@@ -83,7 +83,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     final List<String> profilePictures = [
       "assets/pictures/profile/profile_1.png",
       "assets/pictures/profile/profile_2.png",
-      "assets/pictures/profile/profile_3.png",
     ];
 
     profilPicture = profilePictures[0];

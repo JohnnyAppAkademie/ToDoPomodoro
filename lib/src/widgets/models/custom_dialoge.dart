@@ -126,7 +126,8 @@ class CustomDialoge extends StatelessWidget {
               right: context.screenWidth * 0.12,
               top: context.screenHeight * 0.35,
               child: IconButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.popUntil(context, (route) => route.isFirst),
                 icon: const Icon(Icons.cancel_outlined, color: Colors.white),
               ),
             ),
